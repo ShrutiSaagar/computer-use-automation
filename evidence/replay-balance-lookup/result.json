@@ -1,0 +1,83 @@
+{
+  "runId": "replay-balance-lookup",
+  "capabilityId": "member.shareSavings.lookup",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:39.176Z",
+  "durationMs": 463,
+  "evidenceDir": "evidence/replay-balance-lookup",
+  "steps": [
+    {
+      "stepId": "s1_navigate",
+      "action": "navigate",
+      "status": "ok",
+      "ms": 20,
+      "recoveries": []
+    },
+    {
+      "stepId": "s2_operator_id",
+      "action": "type",
+      "status": "ok",
+      "ms": 14,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s3_password",
+      "action": "type",
+      "status": "ok",
+      "ms": 35,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s4_sign_on",
+      "action": "click",
+      "status": "ok",
+      "ms": 93,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s5_member_no",
+      "action": "type",
+      "status": "ok",
+      "ms": 11,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s6_search",
+      "action": "click",
+      "status": "ok",
+      "ms": 219,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    }
+  ],
+  "flags": [],
+  "status": "success",
+  "outputs": {
+    "shareSavingsAccountNumber": "0001-⟪identifier:memberNumber⟫",
+    "shareSavingsBalance": "$4820.55"
+  }
+}

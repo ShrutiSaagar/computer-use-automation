@@ -1,0 +1,28 @@
+# Development / demo posture.
+#
+# irreversible: allow  -- so the demo and the test suite complete unattended.
+# The step is still CLASSIFIED as irreversible in the artifact and the run still
+# reports a risky_action_allowed flag; what changes is only the response. That
+# separation is the point: swapping to policy.prod.yaml changes the safety
+# posture of every capability at once, with no artifact re-recorded.
+name: dev
+
+allowedOrigins:
+  - http://localhost:4310
+  - http://localhost:4311
+
+allowedActions: [navigate, click, type, select, press, assert]
+
+deniedControlPatterns:
+  - '\b(wire|ach origination|charge[- ]off|close account|delete member)\b'
+
+risk:
+  safe: allow
+  risky: allow
+  irreversible: allow
+
+allowCoordinateFallback: false
+assistedRecovery: false
+requireStatus: draft
+maxSteps: 60
+maxRuntimeMs: 300000

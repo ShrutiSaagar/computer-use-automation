@@ -1,0 +1,60 @@
+[
+ {
+  "kind": "mouse",
+  "detail": "click at (328,115) on frame",
+  "ts": "2026-08-30T00:51:40.592Z"
+ },
+ {
+  "kind": "key",
+  "detail": "O",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.836Z"
+ },
+ {
+  "kind": "key",
+  "detail": "V",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.836Z"
+ },
+ {
+  "kind": "key",
+  "detail": "R",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.837Z"
+ },
+ {
+  "kind": "key",
+  "detail": "-",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.837Z"
+ },
+ {
+  "kind": "key",
+  "detail": "7",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.837Z"
+ },
+ {
+  "kind": "key",
+  "detail": "7",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.837Z"
+ },
+ {
+  "kind": "key",
+  "detail": "8",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.837Z"
+ },
+ {
+  "kind": "key",
+  "detail": "1",
+  "redacted": false,
+  "ts": "2026-08-30T00:51:45.839Z"
+ },
+ {
+  "kind": "mouse",
+  "detail": "click at (443,115) on frame",
+  "ts": "2026-08-30T00:51:49.021Z"
+ }
+]

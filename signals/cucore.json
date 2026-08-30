@@ -1,0 +1,111 @@
+{
+  "productId": "cucore",
+  "note": "Product-level signal pack. Session expiry, maintenance interstitials and app crashes are properties of the VENDOR PRODUCT, not of any one capability -- so they are curated once here and merged into every capability recorded against cucore, rather than rediscovered per flow. A discovery run only sees the exceptional states that happen to occur while it is running; this is where the ones an operations team already knows about live.",
+  "signals": [
+    {
+      "id": "app_error",
+      "priority": 5,
+      "classify": "hard_failure",
+      "errorClass": "surface_error",
+      "description": "The application returned an unhandled server exception.",
+      "when": {
+        "text_present": "Unhandled Exception"
+      }
+    },
+    {
+      "id": "session_expired",
+      "priority": 20,
+      "classify": "recoverable",
+      "description": "The back-office session timed out; sign on again and rebuild navigation state.",
+      "when": {
+        "text_present": "Your session has expired"
+      },
+      "recover": {
+        "do": "reauth",
+        "then": "restart",
+        "maxTimes": 2,
+        "waitMs": 0
+      }
+    },
+    {
+      "id": "system_notice",
+      "priority": 21,
+      "classify": "recoverable",
+      "description": "An unscheduled maintenance notice interposed itself; acknowledge and carry on.",
+      "when": {
+        "text_present": "Scheduled maintenance is planned"
+      },
+      "recover": {
+        "do": "click",
+        "target": {
+          "description": "the Continue button on the System Notice interstitial",
+          "strategies": [
+            {
+              "kind": "role_name",
+              "role": "button",
+              "name": "Continue",
+              "exact": true
+            }
+          ],
+          "recordedRank": 0,
+          "guard": {
+            "role": "button",
+            "name": "Continue"
+          }
+        },
+        "then": "continue",
+        "maxTimes": 3,
+        "waitMs": 0
+      }
+    },
+    {
+      "id": "member_not_found",
+      "priority": 10,
+      "classify": "business_outcome",
+      "description": "The member number does not exist at this institution. A legitimate answer, not a failure.",
+      "when": {
+        "text_matches": "No member matching \"([^\"]*)\" was found"
+      },
+      "outcome": {
+        "code": "MEMBER_NOT_FOUND",
+        "message": "No member with that number exists at this institution.",
+        "capture": {
+          "searchedFor": 1
+        }
+      }
+    },
+    {
+      "id": "deposit_below_minimum",
+      "priority": 11,
+      "classify": "business_outcome",
+      "description": "The core rejected the opening deposit as below the product minimum. Curated here after a discovery run proposed a detector that matched the permanent \"min $25.00\" hint beside the field rather than the rejection message -- the compiler caught it, and this is the corrected version.",
+      "when": {
+        "text_matches": "Opening deposit must be at least \\$([0-9.]+)"
+      },
+      "outcome": {
+        "code": "DEPOSIT_BELOW_MINIMUM",
+        "message": "The opening deposit is below this product's minimum.",
+        "capture": {
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "id": "permission_denied",
+      "priority": 12,
+      "classify": "business_outcome",
+      "description": "The service operator lacks the entitlement for this action.",
+      "when": {
+        "text_present": "not authorized to open sub-accounts"
+      },
+      "outcome": {
+        "code": "PERMISSION_DENIED",
+        "message": "The automation operator is not entitled to perform this action."
+      }
+    }
+  ],
+  "fingerprint": {
+    "text_matches": "CU-Core Back Office 8\\.2"
+  },
+  "fingerprintNote": "Asserted once at the start of every replay of every capability on this product. It answers 'is this still the software we recorded against?'. A mismatch is FLAGGED, not fatal: one institution upgrading ahead of the rest is exactly the thing you want to hear about on the day it happens rather than the morning a hundred replays break, and refusing to work would be a worse answer than working and saying so."
+}

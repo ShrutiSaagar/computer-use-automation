@@ -1,0 +1,62 @@
+{
+  "runId": "replay-app-error",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:22.170Z",
+  "durationMs": 239,
+  "evidenceDir": "evidence/replay-app-error",
+  "steps": [
+    {
+      "stepId": "s1_navigate",
+      "action": "navigate",
+      "status": "ok",
+      "ms": 19,
+      "recoveries": []
+    },
+    {
+      "stepId": "s2_operator_id",
+      "action": "type",
+      "status": "ok",
+      "ms": 14,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s3_password",
+      "action": "type",
+      "status": "ok",
+      "ms": 44,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s4_sign_on",
+      "action": "click",
+      "status": "ok",
+      "ms": 130,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    }
+  ],
+  "flags": [],
+  "status": "failed",
+  "error": {
+    "class": "surface_error",
+    "stepId": "s4_sign_on",
+    "message": "signal \"app_error\" fired: The application returned an unhandled server exception.",
+    "expected": "not page contains \"Unhandled Exception\"",
+    "observed": " Riverbend Credit Union — CU-Core Back Office 8.2 Servicing Member Search Reports Sign Out Riverbend Credit Union — CU-Core Back Office 8.2 Server Error in '/CUCore' Application. Unhandled Exception System.NullReferenceException: Object reference not set to an instance of an object. at CUCore.Servicing.MemberController.Render(HttpContext ctx)"
+  }
+}

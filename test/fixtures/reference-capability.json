@@ -1,0 +1,890 @@
+{
+  "schemaVersion": "1.0",
+  "id": "member.subaccount.open",
+  "version": 1,
+  "name": "Open a member sub-account",
+  "description": "Signs on to CU-Core Back Office, looks up a member by number, opens a new sub-account of the requested product type with the given opening deposit, and returns the new account number, confirmation code and effective date from the confirmation screen.",
+  "status": "verified",
+  "product": {
+    "id": "cucore",
+    "vendor": "CU-Core Systems",
+    "version": "8.2"
+  },
+  "surface": {
+    "kind": "legacy_web",
+    "entryUrl": "http://localhost:4310/"
+  },
+  "auth": {
+    "credentialRef": "env:CU_CORE_OPERATOR",
+    "loginStepIds": [
+      "s1_username",
+      "s2_password",
+      "s3_signon"
+    ]
+  },
+  "inputs": [
+    {
+      "name": "memberId",
+      "type": "string",
+      "description": "The six-digit member number to open the sub-account for.",
+      "required": true,
+      "pattern": "^\\d{6}$",
+      "sensitivity": "identifier",
+      "example": "100482"
+    },
+    {
+      "name": "accountType",
+      "type": "string",
+      "description": "Which product to open.",
+      "required": true,
+      "enum": [
+        "Share Savings",
+        "Money Market",
+        "Certificate",
+        "Holiday Club"
+      ],
+      "default": "Share Savings",
+      "sensitivity": "none",
+      "example": "Money Market"
+    },
+    {
+      "name": "openingDeposit",
+      "type": "string",
+      "description": "Opening deposit in dollars. The core rejects anything below the product minimum.",
+      "required": true,
+      "pattern": "^\\d+(\\.\\d{2})?$",
+      "sensitivity": "amount",
+      "example": "50"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "newAccountNumber",
+      "type": "string",
+      "description": "The account number the core assigned.",
+      "from": {
+        "description": "the New Account Number value on the confirmation screen",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "New Account Number",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(1) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.0894
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^\\d{4}-\\d{6}$",
+      "sensitivity": "account_number"
+    },
+    {
+      "name": "confirmationCode",
+      "type": "string",
+      "description": "Confirmation reference for the opening.",
+      "from": {
+        "description": "the Confirmation value on the confirmation screen",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Confirmation",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(2) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.1131
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^SA-\\d{6}-[A-Z]+$",
+      "sensitivity": "none"
+    },
+    {
+      "name": "effectiveDate",
+      "type": "string",
+      "description": "Date the account becomes effective (YYYY-MM-DD).",
+      "from": {
+        "description": "the Effective Date value on the confirmation screen",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Effective Date",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(3) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.1369
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "sensitivity": "none"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1_username",
+      "intent": "Enter the service operator ID on the sign-on screen",
+      "action": "type",
+      "target": {
+        "description": "the Operator ID field on the sign-on screen",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Operator ID",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtUser$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(1) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtUser"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.0869
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Operator ID",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.username"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s2_password",
+      "intent": "Enter the service operator password",
+      "action": "type",
+      "target": {
+        "description": "the Password field on the sign-on screen",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Password",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Password",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtPwd$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtPwd"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.1156
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Password",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.password"
+      },
+      "risk": "safe",
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s3_signon",
+      "intent": "Sign on to the back office",
+      "action": "click",
+      "target": {
+        "description": "the Sign On button on the sign-on screen",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnSignOn$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(3) > td > input#ctl00_ContentPlaceHolder1_btnSignOn"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0352,
+            "ny": 0.1456
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Sign On",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "node_visible": {
+          "role": "link",
+          "name": "Member Search"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s4_member",
+      "intent": "Type the member number into the Member Search form",
+      "action": "type",
+      "target": {
+        "description": "the member number field on the Member Search form",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Member No.",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtMbrNo$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtMbrNo"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1317,
+            "ny": 0.0931
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$param": "memberId"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Search"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s5_search",
+      "intent": "Run the member search",
+      "action": "click",
+      "target": {
+        "description": "the Search button on the Member Search form",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Search",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Search",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Member No.",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnSearch$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr > td:nth-of-type(3) > input#ctl00_ContentPlaceHolder1_btnSearch"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.2155,
+            "ny": 0.0931
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Search",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "text_present": "Member Detail"
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s6_newsub",
+      "intent": "Open the New Sub-Account form for this member",
+      "action": "click",
+      "target": {
+        "description": "the New Sub-Account button on the member detail screen",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "New Sub-Account",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "New Sub-Account",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "2016-07-02",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnNewSub$"
+          },
+          {
+            "kind": "css",
+            "value": "tr > td > form > input#ctl00_ContentPlaceHolder1_btnNewSub"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0649,
+            "ny": 0.2794
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "New Sub-Account",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "checkpoint": {
+        "node_visible": {
+          "role": "combobox",
+          "name": "Account Type"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s7_type",
+      "intent": "Choose the product type for the new sub-account",
+      "action": "select",
+      "target": {
+        "description": "the Account Type dropdown on the New Sub-Account form",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "combobox",
+            "name": "Account Type",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Account Type",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Account Type",
+            "role": "combobox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "ddlType$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(1) > td:nth-of-type(2) > select#ctl00_ContentPlaceHolder1_ddlType"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1488,
+            "ny": 0.0919
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "combobox",
+          "name": "Account Type",
+          "tag": "select"
+        }
+      },
+      "value": {
+        "$param": "accountType"
+      },
+      "risk": "safe",
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s8_deposit",
+      "intent": "Enter the opening deposit amount",
+      "action": "type",
+      "target": {
+        "description": "the Opening Deposit field on the New Sub-Account form",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Opening Deposit",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtDeposit$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input#ctl00_dynvttaac_txtDeposit"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1452,
+            "ny": 0.1206
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$param": "openingDeposit"
+      },
+      "risk": "safe",
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s9_continue",
+      "intent": "Submit the form and reach the review screen",
+      "action": "click",
+      "target": {
+        "description": "the Continue button on the New Sub-Account form",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Continue",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Continue",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Optional notes",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnContinue$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(5) > td > input#ctl00_ContentPlaceHolder1_btnContinue"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0464,
+            "ny": 0.2081
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Continue",
+          "tag": "input"
+        }
+      },
+      "risk": "risky",
+      "checkpoint": {
+        "text_present": "Review Sub-Account Request"
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s10_open",
+      "intent": "Post the account opening to the core",
+      "action": "click",
+      "target": {
+        "description": "the Open Account button on the review screen",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Open Account",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Open Account",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "(none)",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnConfirm$"
+          },
+          {
+            "kind": "css",
+            "value": "tr > td > form > input#ctl00_ContentPlaceHolder1_btnConfirm"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0555,
+            "ny": 0.2206
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Open Account",
+          "tag": "input"
+        }
+      },
+      "risk": "irreversible",
+      "checkpoint": {
+        "text_present": "Sub-Account Opened"
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    }
+  ],
+  "signals": [
+    {
+      "id": "member_not_found",
+      "description": "The member number does not exist in this institution.",
+      "when": {
+        "text_matches": "No member matching \"([^\"]*)\" was found"
+      },
+      "classify": "business_outcome",
+      "priority": 10,
+      "outcome": {
+        "code": "MEMBER_NOT_FOUND",
+        "message": "No member with that number exists at this institution.",
+        "capture": {
+          "searchedFor": 1
+        }
+      }
+    },
+    {
+      "id": "deposit_below_minimum",
+      "description": "The core rejected the opening deposit as below the product minimum.",
+      "when": {
+        "text_matches": "Opening deposit must be at least \\$([0-9.]+)"
+      },
+      "classify": "business_outcome",
+      "priority": 11,
+      "outcome": {
+        "code": "DEPOSIT_BELOW_MINIMUM",
+        "message": "The opening deposit is below this product\u2019s minimum.",
+        "capture": {
+          "minimum": 1
+        }
+      }
+    },
+    {
+      "id": "permission_denied",
+      "description": "The service operator lacks the sub-account entitlement.",
+      "when": {
+        "text_present": "not authorized to open sub-accounts"
+      },
+      "classify": "business_outcome",
+      "priority": 12,
+      "outcome": {
+        "code": "PERMISSION_DENIED",
+        "message": "The automation operator is not entitled to open sub-accounts."
+      }
+    },
+    {
+      "id": "session_expired",
+      "description": "The back-office session timed out; sign on again and rebuild navigation.",
+      "when": {
+        "text_present": "Your session has expired"
+      },
+      "classify": "recoverable",
+      "priority": 20,
+      "recover": {
+        "do": "reauth",
+        "waitMs": 0,
+        "maxTimes": 2,
+        "then": "restart"
+      }
+    },
+    {
+      "id": "system_notice",
+      "description": "An unscheduled maintenance notice interposed itself; acknowledge and carry on.",
+      "when": {
+        "text_present": "Scheduled maintenance is planned"
+      },
+      "classify": "recoverable",
+      "priority": 21,
+      "recover": {
+        "do": "click",
+        "target": {
+          "description": "the Continue button on the System Notice interstitial",
+          "strategies": [
+            {
+              "kind": "role_name",
+              "role": "button",
+              "name": "Continue",
+              "exact": true
+            }
+          ],
+          "recordedRank": 0,
+          "guard": {
+            "role": "button",
+            "name": "Continue"
+          }
+        },
+        "waitMs": 0,
+        "maxTimes": 3,
+        "then": "continue"
+      }
+    },
+    {
+      "id": "app_error",
+      "description": "The application returned an unhandled server exception.",
+      "when": {
+        "text_present": "Unhandled Exception"
+      },
+      "classify": "hard_failure",
+      "priority": 5,
+      "errorClass": "surface_error"
+    }
+  ],
+  "checkpoint": {
+    "all": [
+      {
+        "text_present": "Sub-Account Opened"
+      },
+      {
+        "value_matches": {
+          "target": {
+            "description": "the New Account Number value on the confirmation screen",
+            "frame": {
+              "name": "mainFrame",
+              "index": 2
+            },
+            "strategies": [
+              {
+                "kind": "anchor",
+                "anchorText": "New Account Number",
+                "role": "cell",
+                "ordinal": 0
+              },
+              {
+                "kind": "css",
+                "value": "table > tbody > tr:nth-of-type(1) > td:nth-of-type(2)"
+              },
+              {
+                "kind": "coords",
+                "nx": 0.1772,
+                "ny": 0.0894
+              }
+            ],
+            "recordedRank": 0,
+            "guard": {
+              "role": "cell",
+              "tag": "td"
+            }
+          },
+          "pattern": "^\\d{4}-\\d{6}$"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "discoveryRunId": "hand-authored-reference",
+    "model": "none (hand-authored fixture; ladders derived mechanically from a live walk)",
+    "recordedAt": "2026-08-30T00:20:05.444Z",
+    "evidenceDir": "test/fixtures"
+  },
+  "stats": {
+    "replays": 0,
+    "successes": 0
+  }
+}

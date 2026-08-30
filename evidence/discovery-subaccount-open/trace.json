@@ -1,0 +1,491 @@
+{
+  "goal": "Sign on to the back office, look up member 100482, and open a new Money Market sub-account for them with a 50 dollar opening deposit, reaching the confirmation screen. The reusable capability should take the member number, the account type and the opening deposit as its inputs, and return the new account number, the confirmation code and the effective date.",
+  "target": "http://localhost:4310/",
+  "model": "claude-sonnet-5",
+  "turns": 18,
+  "costUsd": 0.16503940000000003,
+  "blocked": [],
+  "actions": [
+    {
+      "seq": 0,
+      "tool": "navigate",
+      "why": "Start the task by loading the back-office application.",
+      "ok": true,
+      "url": "http://localhost:4310/",
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Operator ID"
+        },
+        {
+          "role": "textbox",
+          "name": "Operator ID"
+        },
+        {
+          "role": "cell",
+          "name": "Password"
+        },
+        {
+          "role": "textbox",
+          "name": "Password"
+        },
+        {
+          "role": "button",
+          "name": "Sign On"
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "tool": "type",
+      "why": "Enter operator ID to sign on to the back office.",
+      "ok": true,
+      "value": "{{OPERATOR_USERNAME}}",
+      "control": {
+        "role": "textbox",
+        "name": "Operator ID",
+        "id": "ctl00_ContentPlaceHolder1_txtUser",
+        "anchorText": "Operator ID",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 2,
+      "tool": "type",
+      "why": "Enter operator password to sign on to the back office.",
+      "ok": true,
+      "value": "{{OPERATOR_PASSWORD}}",
+      "control": {
+        "role": "textbox",
+        "name": "Password",
+        "id": "ctl00_ContentPlaceHolder1_txtPwd",
+        "anchorText": "Password",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 3,
+      "tool": "click",
+      "why": "Submit credentials to sign on to the back office.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Sign On",
+        "id": "ctl00_ContentPlaceHolder1_btnSignOn",
+        "anchorText": "Password",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Servicing"
+        },
+        {
+          "role": "link",
+          "name": "Member Search"
+        },
+        {
+          "role": "link",
+          "name": "Reports"
+        },
+        {
+          "role": "link",
+          "name": "Sign Out"
+        },
+        {
+          "role": "cell",
+          "name": "Member No."
+        },
+        {
+          "role": "button",
+          "name": "Search"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "tool": "type",
+      "why": "Enter the member number to look up the member record.",
+      "ok": true,
+      "value": "100482",
+      "control": {
+        "role": "textbox",
+        "name": "",
+        "id": "ctl00_ContentPlaceHolder1_txtMbrNo",
+        "anchorText": "Member No.",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 5,
+      "tool": "click",
+      "why": "Search for member 100482.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Search",
+        "id": "ctl00_ContentPlaceHolder1_btnSearch",
+        "anchorText": "\"100482\"",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "100482"
+        },
+        {
+          "role": "cell",
+          "name": "Status"
+        },
+        {
+          "role": "cell",
+          "name": "Active"
+        },
+        {
+          "role": "cell",
+          "name": "Name"
+        },
+        {
+          "role": "cell",
+          "name": "Testerson, Ada Q."
+        },
+        {
+          "role": "cell",
+          "name": "Branch"
+        },
+        {
+          "role": "cell",
+          "name": "Riverbend"
+        },
+        {
+          "role": "cell",
+          "name": "Member Since"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "tool": "click",
+      "why": "Open the new sub-account form to create a Money Market account for this member.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "New Sub-Account",
+        "id": "ctl00_ContentPlaceHolder1_btnNewSub",
+        "anchorText": "2016-07-02",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Account Type"
+        },
+        {
+          "role": "combobox",
+          "name": "Account Type"
+        },
+        {
+          "role": "option",
+          "name": "Share Savings"
+        },
+        {
+          "role": "option",
+          "name": "Money Market"
+        },
+        {
+          "role": "option",
+          "name": "Certificate"
+        },
+        {
+          "role": "option",
+          "name": "Holiday Club"
+        },
+        {
+          "role": "cell",
+          "name": "Opening Deposit"
+        },
+        {
+          "role": "cell",
+          "name": "min $25.00"
+        }
+      ]
+    },
+    {
+      "seq": 7,
+      "tool": "select",
+      "why": "Select Money Market as the account type for the new sub-account.",
+      "ok": true,
+      "value": "Money Market",
+      "control": {
+        "role": "combobox",
+        "name": "Account Type",
+        "id": "ctl00_ContentPlaceHolder1_ddlType",
+        "anchorText": "Account Type",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Money Market"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "tool": "type",
+      "why": "Enter the $50 opening deposit amount required to open the account.",
+      "ok": true,
+      "value": "50.00",
+      "control": {
+        "role": "textbox",
+        "name": "",
+        "id": "ctl00_dynu2v6gu_txtDeposit",
+        "anchorText": "Opening Deposit",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 9,
+      "tool": "click",
+      "why": "Proceed to the next step of the new sub-account creation with Money Market and $50 deposit set.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Continue",
+        "id": "ctl00_ContentPlaceHolder1_btnContinue",
+        "anchorText": "Optional notes",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Member"
+        },
+        {
+          "role": "cell",
+          "name": "100482 Testerson, Ada Q."
+        },
+        {
+          "role": "cell",
+          "name": "$50.00"
+        },
+        {
+          "role": "cell",
+          "name": "0001-100482"
+        },
+        {
+          "role": "cell",
+          "name": "(none)"
+        },
+        {
+          "role": "button",
+          "name": "Open Account"
+        },
+        {
+          "role": "cell",
+          "name": "This posts the account opening to the core. It cannot be undone from this screen."
+        }
+      ]
+    },
+    {
+      "seq": 10,
+      "tool": "click",
+      "why": "Confirm and post the account opening to the core to reach the confirmation screen, as instructed by the goal.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Open Account",
+        "id": "ctl00_ContentPlaceHolder1_btnConfirm",
+        "anchorText": "(none)",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "New Account Number"
+        },
+        {
+          "role": "cell",
+          "name": "0003-100482"
+        },
+        {
+          "role": "cell",
+          "name": "Confirmation"
+        },
+        {
+          "role": "cell",
+          "name": "SA-100482-MONE"
+        },
+        {
+          "role": "cell",
+          "name": "Effective Date"
+        },
+        {
+          "role": "cell",
+          "name": "2026-08-30"
+        }
+      ]
+    }
+  ],
+  "extractions": [
+    {
+      "name": "newAccountNumber",
+      "description": "The newly created sub-account number for the Money Market account."
+    },
+    {
+      "name": "confirmationCode",
+      "description": "The confirmation code issued for the sub-account opening transaction."
+    },
+    {
+      "name": "effectiveDate",
+      "description": "The effective date on which the new sub-account was opened."
+    }
+  ],
+  "finalize": {
+    "id": "member.subaccount.open",
+    "name": "Open Member Sub-Account",
+    "description": "Signs on to the CU-Core back office, looks up a member by member number, and opens a new sub-account of a given type (e.g. Money Market, Share Savings, Certificate, Holiday Club) funded by an opening deposit from the member's primary Share Savings account, posting the account opening to the core. Returns the new account number, confirmation code, and effective date. Requires a valid, active member number and an opening deposit amount that meets the account type's stated minimum (e.g. $25.00 for Money Market). This action is irreversible once \"Open Account\" is confirmed -- it posts to the core.",
+    "inputs": [
+      {
+        "name": "memberNumber",
+        "type": "string",
+        "description": "The member number to look up and open the sub-account for.",
+        "pattern": "^[0-9]{6}$",
+        "sensitivity": "identifier",
+        "example": "100482"
+      },
+      {
+        "name": "accountType",
+        "type": "string",
+        "description": "The type of sub-account to open.",
+        "enumValues": [
+          "Share Savings",
+          "Money Market",
+          "Certificate",
+          "Holiday Club"
+        ],
+        "sensitivity": "none",
+        "example": "Money Market"
+      },
+      {
+        "name": "openingDeposit",
+        "type": "number",
+        "description": "The opening deposit amount for the new sub-account, must meet the account type's minimum (e.g. $25.00 for Money Market).",
+        "pattern": "^[0-9]+\\.[0-9]{2}$",
+        "sensitivity": "amount",
+        "example": "50.00"
+      }
+    ],
+    "steps": [
+      {
+        "seq": 0,
+        "intent": "Navigate to the back-office application URL.",
+        "risk": "safe"
+      },
+      {
+        "seq": 1,
+        "intent": "Type the operator username into the Operator ID field.",
+        "risk": "safe"
+      },
+      {
+        "seq": 2,
+        "intent": "Type the operator password into the Password field.",
+        "risk": "safe"
+      },
+      {
+        "seq": 3,
+        "intent": "Click Sign On to authenticate.",
+        "risk": "safe"
+      },
+      {
+        "seq": 4,
+        "intent": "Type the member number into the Member No. search field.",
+        "risk": "safe"
+      },
+      {
+        "seq": 5,
+        "intent": "Click Search to look up the member.",
+        "risk": "safe"
+      },
+      {
+        "seq": 6,
+        "intent": "Click New Sub-Account to start the sub-account creation form.",
+        "risk": "safe"
+      },
+      {
+        "seq": 7,
+        "intent": "Select the desired account type in the Account Type dropdown.",
+        "risk": "safe"
+      },
+      {
+        "seq": 8,
+        "intent": "Type the opening deposit amount into the Opening Deposit field.",
+        "risk": "safe"
+      },
+      {
+        "seq": 9,
+        "intent": "Click Continue to move to the review screen.",
+        "risk": "safe"
+      },
+      {
+        "seq": 10,
+        "intent": "Click Open Account to post the account opening to the core, reaching the confirmation screen.",
+        "risk": "irreversible"
+      }
+    ],
+    "droppedSeqs": [],
+    "outputs": [
+      {
+        "name": "newAccountNumber",
+        "type": "string",
+        "description": "The account number assigned to the newly opened sub-account.",
+        "pattern": "^[0-9]{4}-[0-9]{6}$",
+        "sensitivity": "account_number"
+      },
+      {
+        "name": "confirmationCode",
+        "type": "string",
+        "description": "The confirmation code issued for the sub-account opening transaction.",
+        "pattern": "^[A-Z0-9-]+$",
+        "sensitivity": "identifier"
+      },
+      {
+        "name": "effectiveDate",
+        "type": "string",
+        "description": "The effective date the new sub-account was opened, in YYYY-MM-DD format.",
+        "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+        "sensitivity": "none"
+      }
+    ],
+    "checkpointText": "Sub-Account Opened",
+    "businessOutcomes": [
+      {
+        "code": "member_not_found",
+        "message": "No member found matching that number.",
+        "whenTextMatches": "No member found|No results",
+        "description": "The member search returns no matching record for the given member number."
+      },
+      {
+        "code": "deposit_below_minimum",
+        "message": "Opening deposit does not meet the minimum required for this account type.",
+        "whenTextMatches": "min \\$",
+        "description": "The opening deposit entered is below the account type's stated minimum (e.g. $25.00 for Money Market), which the form displays as a hint next to the Opening Deposit field."
+      }
+    ]
+  }
+}

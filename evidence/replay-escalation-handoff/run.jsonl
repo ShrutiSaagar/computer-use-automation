@@ -1,0 +1,18 @@
+{"ts":"2026-08-30T00:51:04.965Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@1","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"]}
+{"ts":"2026-08-30T00:51:05.235Z","seq":1,"type":"acted","stepId":"s1_navigate","action":"navigate"}
+{"ts":"2026-08-30T00:51:05.266Z","seq":2,"type":"acted","stepId":"s2_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
+{"ts":"2026-08-30T00:51:05.283Z","seq":3,"type":"acted","stepId":"s3_password","action":"type","control":"Password","value":"⟪secret⟫"}
+{"ts":"2026-08-30T00:51:05.368Z","seq":4,"type":"acted","stepId":"s4_sign_on","action":"click","control":"Sign On"}
+{"ts":"2026-08-30T00:51:05.488Z","seq":5,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
+{"ts":"2026-08-30T00:51:05.540Z","seq":6,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
+{"ts":"2026-08-30T00:51:05.782Z","seq":7,"type":"acted","stepId":"s7_new_sub_account","action":"click","control":"New Sub-Account"}
+{"ts":"2026-08-30T00:51:05.979Z","seq":8,"type":"acted","stepId":"s8_account_type","action":"select","control":"Account Type"}
+{"ts":"2026-08-30T00:51:05.993Z","seq":9,"type":"acted","stepId":"s9_opening_deposit","action":"type","control":""}
+{"ts":"2026-08-30T00:51:06.034Z","seq":10,"type":"acted","stepId":"s10_continue","action":"click","control":"Continue"}
+{"ts":"2026-08-30T00:51:16.194Z","seq":11,"type":"checkpoint_failed","stepId":"s10_continue","expected":"a cell named \"Member\" is visible"}
+{"ts":"2026-08-30T00:51:16.376Z","seq":12,"type":"intervention_raised","reason":"stuck","stepId":"s10_continue","summary":"Automation is stuck on \"Proceed to the review screen with the entered details.\"."}
+{"ts":"2026-08-30T00:52:00.757Z","seq":13,"type":"intervention_resolved","resolution":"resume","operator":"operator@console","note":"Supervisor override OVR-7781 applied by hand; review screen is now up.","humanActions":10}
+{"ts":"2026-08-30T00:52:00.764Z","seq":14,"type":"handoff_verified","stepId":"s10_continue","checkpoint":"a cell named \"Member\" is visible"}
+{"ts":"2026-08-30T00:52:00.769Z","seq":15,"type":"risky_action","stepId":"s11_open_account","risk":"irreversible","control":"Open Account","response":"allow"}
+{"ts":"2026-08-30T00:52:00.800Z","seq":16,"type":"acted","stepId":"s11_open_account","action":"click","control":"Open Account"}
+{"ts":"2026-08-30T00:52:01.012Z","seq":17,"type":"replay_success","outputs":["newAccountNumber","confirmationCode","effectiveDate"],"meanStrategyRank":0}

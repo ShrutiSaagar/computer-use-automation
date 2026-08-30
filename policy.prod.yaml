@@ -1,0 +1,33 @@
+# Production posture.
+#
+# irreversible: confirm -- an unattended agent never posts an account opening or
+# moves money on its own. A human sees exactly what is about to be submitted and
+# approves it. The cost is one tap; the cost of the alternative is the pilot.
+#
+# requireStatus: approved -- a capability replays unattended only after a person
+# has reviewed the artifact, not merely after it self-replayed clean once.
+#
+# assistedRecovery: true -- bounded single-step locator repair is ON here and OFF
+# in dev, which is deliberate: dev runs must fail loudly so drift shows up in CI,
+# while production would rather repair one locator, log it, and file the patch.
+name: prod
+
+allowedOrigins:
+  - http://localhost:4310
+  - http://localhost:4311
+
+allowedActions: [navigate, click, type, select, press, assert]
+
+deniedControlPatterns:
+  - '\b(wire|ach origination|charge[- ]off|close account|delete member)\b'
+
+risk:
+  safe: allow
+  risky: allow
+  irreversible: confirm
+
+allowCoordinateFallback: false
+assistedRecovery: true
+requireStatus: approved
+maxSteps: 60
+maxRuntimeMs: 300000

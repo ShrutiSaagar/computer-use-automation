@@ -1,0 +1,695 @@
+{
+ "url": "http://localhost:4310/",
+ "frameUrls": {
+  "f1": "http://localhost:4310/",
+  "f2": "http://localhost:4310/nav",
+  "f3": "http://localhost:4310/content/search"
+ },
+ "nodes": [
+  {
+   "ref": "f1e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e1",
+    "box": "0,0,1280,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 0,
+   "index": 0
+  },
+  {
+   "ref": "f1e2",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e2",
+    "box": "0,0,170,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 1
+  },
+  {
+   "ref": "f2e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e1",
+    "box": "0,0,170,136"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 136
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 2,
+   "index": 2
+  },
+  {
+   "ref": "f2e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f2e2",
+    "box": "0,0,170,57"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 57
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 3
+  },
+  {
+   "ref": "f2e3",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e3",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 4
+  },
+  {
+   "ref": "f2e4",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e4",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 4,
+   "index": 5
+  },
+  {
+   "ref": "f2e5",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e5",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 6
+  },
+  {
+   "ref": "f2e6",
+   "role": "cell",
+   "name": "Servicing",
+   "props": {
+    "ref": "f2e6",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 7
+  },
+  {
+   "ref": "f2e7",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e7",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 8
+  },
+  {
+   "ref": "f2e8",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e8",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 9
+  },
+  {
+   "ref": "f2e10",
+   "role": "link",
+   "name": "Member Search",
+   "text": "",
+   "props": {
+    "ref": "f2e10",
+    "cursor": "pointer",
+    "box": "3,83,79,12",
+    "url": "/content/search"
+   },
+   "box": {
+    "x": 3,
+    "y": 83,
+    "w": 79,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 10
+  },
+  {
+   "ref": "f2e11",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e11",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 11
+  },
+  {
+   "ref": "f2e12",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e12",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 12
+  },
+  {
+   "ref": "f2e14",
+   "role": "link",
+   "name": "Reports",
+   "text": "",
+   "props": {
+    "ref": "f2e14",
+    "cursor": "pointer",
+    "box": "3,102,38,12",
+    "url": "/content/reports"
+   },
+   "box": {
+    "x": 3,
+    "y": 102,
+    "w": 38,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 13
+  },
+  {
+   "ref": "f2e15",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e15",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 14
+  },
+  {
+   "ref": "f2e16",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e16",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 15
+  },
+  {
+   "ref": "f2e18",
+   "role": "link",
+   "name": "Sign Out",
+   "text": "",
+   "props": {
+    "ref": "f2e18",
+    "cursor": "pointer",
+    "box": "3,121,44,12",
+    "url": "/logout"
+   },
+   "box": {
+    "x": 3,
+    "y": 121,
+    "w": 44,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 16
+  },
+  {
+   "ref": "f1e3",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "f1e3",
+    "box": "171,0,1109,800"
+   },
+   "box": {
+    "x": 171,
+    "y": 0,
+    "w": 1109,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 17
+  },
+  {
+   "ref": "f3e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e1",
+    "box": "0,0,1109,92"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 92
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 2,
+   "index": 18
+  },
+  {
+   "ref": "f3e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f3e2",
+    "box": "0,0,1109,27"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 27
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 19
+  },
+  {
+   "ref": "f3e3",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e3",
+    "box": "8,35,462,57"
+   },
+   "box": {
+    "x": 8,
+    "y": 35,
+    "w": 462,
+    "h": 57
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 20
+  },
+  {
+   "ref": "f3e4",
+   "role": "generic",
+   "name": "",
+   "text": "Member Search",
+   "props": {
+    "ref": "f3e4",
+    "box": "9,36,460,22"
+   },
+   "box": {
+    "x": 9,
+    "y": 36,
+    "w": 460,
+    "h": 22
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 21
+  },
+  {
+   "ref": "f3e6",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e6",
+    "box": "9,58,267,33"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 267,
+    "h": 33
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 22
+  },
+  {
+   "ref": "f3e7",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e7",
+    "box": "9,58,267,33"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 267,
+    "h": 33
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 5,
+   "index": 23
+  },
+  {
+   "ref": "f3e18",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e18",
+    "box": "9,58,267,33"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 267,
+    "h": 33
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 6,
+   "index": 24
+  },
+  {
+   "ref": "f3e19",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e19",
+    "box": "9,58,267,33"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 267,
+    "h": 33
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 7,
+   "index": 25
+  },
+  {
+   "ref": "f3e10",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e10",
+    "box": "13,62,259,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 259,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 8,
+   "index": 26
+  },
+  {
+   "ref": "f3e11",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e11",
+    "box": "13,62,259,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 259,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 9,
+   "index": 27
+  },
+  {
+   "ref": "f3e20",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e20",
+    "box": "13,62,259,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 259,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 28
+  },
+  {
+   "ref": "f3e13",
+   "role": "cell",
+   "name": "Member No.",
+   "props": {
+    "ref": "f3e13",
+    "box": "13,62,73,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 73,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 29
+  },
+  {
+   "ref": "f3e21",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e21",
+    "box": "86,62,120,25"
+   },
+   "box": {
+    "x": 86,
+    "y": 62,
+    "w": 120,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 30
+  },
+  {
+   "ref": "f3e15",
+   "role": "textbox",
+   "name": "",
+   "text": "\"100482\"",
+   "props": {
+    "active": "true",
+    "ref": "f3e15",
+    "box": "92,66,108,17"
+   },
+   "box": {
+    "x": 92,
+    "y": 66,
+    "w": 108,
+    "h": 17
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 31
+  },
+  {
+   "ref": "f3e16",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e16",
+    "box": "206,62,66,25"
+   },
+   "box": {
+    "x": 206,
+    "y": 62,
+    "w": 66,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 32
+  },
+  {
+   "ref": "f3e17",
+   "role": "button",
+   "name": "Search",
+   "props": {
+    "ref": "f3e17",
+    "box": "212,65,54,19"
+   },
+   "box": {
+    "x": 212,
+    "y": 65,
+    "w": 54,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 33
+  }
+ ]
+}

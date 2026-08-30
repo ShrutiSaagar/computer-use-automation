@@ -1,0 +1,1071 @@
+{
+ "url": "http://localhost:4310/",
+ "frameUrls": {
+  "f1": "http://localhost:4310/",
+  "f2": "http://localhost:4310/nav",
+  "f3": "http://localhost:4310/content/member/100482/subaccount/new?"
+ },
+ "nodes": [
+  {
+   "ref": "f1e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e1",
+    "box": "0,0,1280,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 0,
+   "index": 0
+  },
+  {
+   "ref": "f1e2",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e2",
+    "box": "0,0,170,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 1
+  },
+  {
+   "ref": "f2e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e1",
+    "box": "0,0,170,136"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 136
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 2,
+   "index": 2
+  },
+  {
+   "ref": "f2e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f2e2",
+    "box": "0,0,170,57"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 57
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 3
+  },
+  {
+   "ref": "f2e3",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e3",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 4
+  },
+  {
+   "ref": "f2e4",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e4",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 4,
+   "index": 5
+  },
+  {
+   "ref": "f2e5",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e5",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 6
+  },
+  {
+   "ref": "f2e6",
+   "role": "cell",
+   "name": "Servicing",
+   "props": {
+    "ref": "f2e6",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 7
+  },
+  {
+   "ref": "f2e7",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e7",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 8
+  },
+  {
+   "ref": "f2e8",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e8",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 9
+  },
+  {
+   "ref": "f2e10",
+   "role": "link",
+   "name": "Member Search",
+   "text": "",
+   "props": {
+    "ref": "f2e10",
+    "cursor": "pointer",
+    "box": "3,83,79,12",
+    "url": "/content/search"
+   },
+   "box": {
+    "x": 3,
+    "y": 83,
+    "w": 79,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 10
+  },
+  {
+   "ref": "f2e11",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e11",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 11
+  },
+  {
+   "ref": "f2e12",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e12",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 12
+  },
+  {
+   "ref": "f2e14",
+   "role": "link",
+   "name": "Reports",
+   "text": "",
+   "props": {
+    "ref": "f2e14",
+    "cursor": "pointer",
+    "box": "3,102,38,12",
+    "url": "/content/reports"
+   },
+   "box": {
+    "x": 3,
+    "y": 102,
+    "w": 38,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 13
+  },
+  {
+   "ref": "f2e15",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e15",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 14
+  },
+  {
+   "ref": "f2e16",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e16",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 15
+  },
+  {
+   "ref": "f2e18",
+   "role": "link",
+   "name": "Sign Out",
+   "text": "",
+   "props": {
+    "ref": "f2e18",
+    "cursor": "pointer",
+    "box": "3,121,44,12",
+    "url": "/logout"
+   },
+   "box": {
+    "x": 3,
+    "y": 121,
+    "w": 44,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 16
+  },
+  {
+   "ref": "f1e3",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "f1e3",
+    "box": "171,0,1109,800"
+   },
+   "box": {
+    "x": 171,
+    "y": 0,
+    "w": 1109,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 17
+  },
+  {
+   "ref": "f3e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "f3e1",
+    "box": "0,0,1109,184"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 184
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 2,
+   "index": 18
+  },
+  {
+   "ref": "f3e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f3e2",
+    "box": "0,0,1109,27"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 27
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 19
+  },
+  {
+   "ref": "f3e3",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e3",
+    "box": "8,35,562,149"
+   },
+   "box": {
+    "x": 8,
+    "y": 35,
+    "w": 562,
+    "h": 149
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 20
+  },
+  {
+   "ref": "f3e4",
+   "role": "generic",
+   "name": "",
+   "text": "New Sub-Account — Member 100482",
+   "props": {
+    "ref": "f3e4",
+    "box": "9,36,560,22"
+   },
+   "box": {
+    "x": 9,
+    "y": 36,
+    "w": 560,
+    "h": 22
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 21
+  },
+  {
+   "ref": "f3e6",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e6",
+    "box": "9,58,363,125"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 363,
+    "h": 125
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 22
+  },
+  {
+   "ref": "f3e7",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e7",
+    "box": "9,58,363,125"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 363,
+    "h": 125
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 5,
+   "index": 23
+  },
+  {
+   "ref": "f3e8",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e8",
+    "box": "9,58,363,125"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 363,
+    "h": 125
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 6,
+   "index": 24
+  },
+  {
+   "ref": "f3e9",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e9",
+    "box": "9,58,363,125"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 363,
+    "h": 125
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 7,
+   "index": 25
+  },
+  {
+   "ref": "f3e10",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e10",
+    "box": "13,62,355,117"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 355,
+    "h": 117
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 8,
+   "index": 26
+  },
+  {
+   "ref": "f3e11",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e11",
+    "box": "13,62,355,117"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 355,
+    "h": 117
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 9,
+   "index": 27
+  },
+  {
+   "ref": "f3e12",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e12",
+    "box": "13,62,355,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 355,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 28
+  },
+  {
+   "ref": "f3e13",
+   "role": "cell",
+   "name": "Account Type",
+   "props": {
+    "ref": "f3e13",
+    "box": "13,62,95,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 95,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 29
+  },
+  {
+   "ref": "f3e15",
+   "role": "cell",
+   "name": "Share Savings",
+   "text": "",
+   "props": {
+    "ref": "f3e15",
+    "box": "108,62,260,23"
+   },
+   "box": {
+    "x": 108,
+    "y": 62,
+    "w": 260,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 30
+  },
+  {
+   "ref": "f3e16",
+   "role": "combobox",
+   "name": "Account Type",
+   "text": "",
+   "props": {
+    "ref": "f3e16",
+    "box": "114,65,102,17"
+   },
+   "box": {
+    "x": 114,
+    "y": 65,
+    "w": 102,
+    "h": 17
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 31
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "Share Savings",
+   "props": {
+    "selected": "true",
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 32
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "Money Market",
+   "props": {
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 33
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "Certificate",
+   "props": {
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 34
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "Holiday Club",
+   "props": {
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 35
+  },
+  {
+   "ref": "f3e17",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e17",
+    "box": "13,85,355,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 85,
+    "w": 355,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 36
+  },
+  {
+   "ref": "f3e18",
+   "role": "cell",
+   "name": "Opening Deposit",
+   "props": {
+    "ref": "f3e18",
+    "box": "13,85,95,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 85,
+    "w": 95,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 37
+  },
+  {
+   "ref": "f3e19",
+   "role": "cell",
+   "name": "min $25.00",
+   "text": "",
+   "props": {
+    "ref": "f3e19",
+    "box": "108,85,260,23"
+   },
+   "box": {
+    "x": 108,
+    "y": 85,
+    "w": 260,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 38
+  },
+  {
+   "ref": "f3e20",
+   "role": "textbox",
+   "name": "",
+   "props": {
+    "ref": "f3e20",
+    "box": "114,88,94,17"
+   },
+   "box": {
+    "x": 114,
+    "y": 88,
+    "w": 94,
+    "h": 17
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 39
+  },
+  {
+   "ref": "",
+   "role": "text",
+   "name": "",
+   "text": "min $25.00",
+   "props": {},
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 12,
+   "index": 40
+  },
+  {
+   "ref": "f3e21",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e21",
+    "box": "13,108,355,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 108,
+    "w": 355,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 41
+  },
+  {
+   "ref": "f3e22",
+   "role": "cell",
+   "name": "Funding Account",
+   "props": {
+    "ref": "f3e22",
+    "box": "13,108,95,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 108,
+    "w": 95,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 42
+  },
+  {
+   "ref": "f3e23",
+   "role": "cell",
+   "name": "0001-100482 (Share Savings)",
+   "text": "",
+   "props": {
+    "ref": "f3e23",
+    "box": "108,108,260,23"
+   },
+   "box": {
+    "x": 108,
+    "y": 108,
+    "w": 260,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 43
+  },
+  {
+   "ref": "f3e24",
+   "role": "combobox",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e24",
+    "box": "114,111,191,17"
+   },
+   "box": {
+    "x": 114,
+    "y": 111,
+    "w": 191,
+    "h": 17
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 44
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "0001-100482 (Share Savings)",
+   "props": {
+    "selected": "true",
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 45
+  },
+  {
+   "ref": "",
+   "role": "option",
+   "name": "0002-100482 (Share Draft)",
+   "props": {
+    "box": "0,0,0,0"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 0,
+    "h": 0
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 13,
+   "index": 46
+  },
+  {
+   "ref": "f3e25",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e25",
+    "box": "13,131,355,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 131,
+    "w": 355,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 47
+  },
+  {
+   "ref": "f3e26",
+   "role": "cell",
+   "name": "Notes",
+   "props": {
+    "ref": "f3e26",
+    "box": "13,131,95,23"
+   },
+   "box": {
+    "x": 13,
+    "y": 131,
+    "w": 95,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 48
+  },
+  {
+   "ref": "f3e27",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e27",
+    "box": "108,131,260,23"
+   },
+   "box": {
+    "x": 108,
+    "y": 131,
+    "w": 260,
+    "h": 23
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 49
+  },
+  {
+   "ref": "f3e28",
+   "role": "textbox",
+   "name": "Optional notes",
+   "props": {
+    "ref": "f3e28",
+    "box": "114,134,248,17"
+   },
+   "box": {
+    "x": 114,
+    "y": 134,
+    "w": 248,
+    "h": 17
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 50
+  },
+  {
+   "ref": "f3e29",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e29",
+    "box": "13,154,355,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 154,
+    "w": 355,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 51
+  },
+  {
+   "ref": "f3e30",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e30",
+    "box": "13,154,355,25"
+   },
+   "box": {
+    "x": 13,
+    "y": 154,
+    "w": 355,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 52
+  },
+  {
+   "ref": "f3e31",
+   "role": "button",
+   "name": "Continue",
+   "props": {
+    "ref": "f3e31",
+    "box": "19,157,65,19"
+   },
+   "box": {
+    "x": 19,
+    "y": 157,
+    "w": 65,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 12,
+   "index": 53
+  }
+ ]
+}

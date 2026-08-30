@@ -1,0 +1,163 @@
+{
+  "runId": "replay-interstitial-recovered",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:14.941Z",
+  "durationMs": 6182,
+  "evidenceDir": "evidence/replay-interstitial-recovered",
+  "steps": [
+    {
+      "stepId": "s1_navigate",
+      "action": "navigate",
+      "status": "ok",
+      "ms": 21,
+      "recoveries": []
+    },
+    {
+      "stepId": "s2_operator_id",
+      "action": "type",
+      "status": "ok",
+      "ms": 15,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s3_password",
+      "action": "type",
+      "status": "ok",
+      "ms": 40,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s4_sign_on",
+      "action": "click",
+      "status": "recovered",
+      "ms": 5152,
+      "recoveries": [
+        {
+          "signalId": "system_notice",
+          "action": "click",
+          "attempt": 1,
+          "outcome": "continued"
+        },
+        {
+          "signalId": "system_notice",
+          "action": "click",
+          "attempt": 2,
+          "outcome": "continued"
+        }
+      ],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s5_member_no",
+      "action": "type",
+      "status": "ok",
+      "ms": 16,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s6_search",
+      "action": "click",
+      "status": "ok",
+      "ms": 209,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s7_new_sub_account",
+      "action": "click",
+      "status": "ok",
+      "ms": 210,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s8_account_type",
+      "action": "select",
+      "status": "ok",
+      "ms": 25,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s9_opening_deposit",
+      "action": "type",
+      "status": "ok",
+      "ms": 26,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s10_continue",
+      "action": "click",
+      "status": "ok",
+      "ms": 214,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s11_open_account",
+      "action": "click",
+      "status": "ok",
+      "ms": 189,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    }
+  ],
+  "flags": [
+    {
+      "kind": "risky_action_allowed",
+      "stepId": "s11_open_account",
+      "risk": "irreversible"
+    }
+  ],
+  "status": "success",
+  "outputs": {
+    "newAccountNumber": "0005-⟪identifier:memberNumber⟫",
+    "confirmationCode": "SA-⟪identifier:memberNumber⟫-MONE",
+    "effectiveDate": "2026-08-30"
+  }
+}

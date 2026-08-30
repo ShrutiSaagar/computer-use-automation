@@ -1,0 +1,505 @@
+{
+  "schemaVersion": "1.0",
+  "id": "member.shareSavings.lookup",
+  "version": 1,
+  "name": "Look up member Share Savings account and balance",
+  "description": "Signs on to the CU-Core back office, searches for a member by member number, and reads the Share Savings sub-account number and current balance from the Member Detail screen. Read-only: changes nothing. Input is the member number; outputs are the Share Savings account number and its current balance.",
+  "status": "verified",
+  "product": {
+    "id": "cucore",
+    "vendor": "CU-Core Systems",
+    "version": "8.2"
+  },
+  "environment": {
+    "viewport": {
+      "width": 1280,
+      "height": 800
+    },
+    "deviceScaleFactor": 1,
+    "locale": "en-US",
+    "timezoneId": "UTC",
+    "colorScheme": "light",
+    "browser": {
+      "name": "chromium",
+      "version": "151.0.7922.34"
+    },
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/151.0.7922.34 Safari/537.36"
+  },
+  "surface": {
+    "kind": "legacy_web",
+    "entryUrl": "http://localhost:4310/"
+  },
+  "auth": {
+    "credentialRef": "env:CU_CORE_OPERATOR",
+    "loginStepIds": [
+      "s2_operator_id",
+      "s3_password",
+      "s4_sign_on"
+    ]
+  },
+  "inputs": [
+    {
+      "name": "memberNumber",
+      "type": "string",
+      "description": "The member number to look up.",
+      "required": true,
+      "pattern": "^[0-9]{5,7}$",
+      "sensitivity": "identifier",
+      "example": "100482"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "shareSavingsAccountNumber",
+      "type": "string",
+      "description": "The Share Savings sub-account number for the member.",
+      "from": {
+        "description": "The Share Savings sub-account number for the member.",
+        "frame": {
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Opened",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table:nth-of-type(1) > tbody > tr:nth-of-type(2) > td:nth-of-type(1)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1411,
+            "ny": 0.2244
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^[0-9]{4}-[0-9]{5,7}$",
+      "sensitivity": "account_number"
+    },
+    {
+      "name": "shareSavingsBalance",
+      "type": "string",
+      "description": "The current balance of the member's Share Savings account, as displayed (with currency symbol).",
+      "from": {
+        "description": "The current balance of the member's Share Savings account.",
+        "frame": {
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Share Savings",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table:nth-of-type(1) > tbody > tr:nth-of-type(2) > td:nth-of-type(3)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.6533,
+            "ny": 0.2244
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^\\$[0-9]+\\.[0-9]{2}$",
+      "sensitivity": "amount"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s1_navigate",
+      "intent": "Open the back-office application to begin sign-on.",
+      "action": "navigate",
+      "url": "http://localhost:4310/",
+      "risk": "safe",
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Operator ID"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s2_operator_id",
+      "intent": "Enter operator ID to sign on to the back office.",
+      "action": "type",
+      "target": {
+        "description": "the \"Operator ID\" textbox",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Operator ID",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtUser$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(1) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtUser"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.0869
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Operator ID",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.username"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "textbox",
+          "name": "Operator ID"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s3_password",
+      "intent": "Enter operator password to sign on to the back office.",
+      "action": "type",
+      "target": {
+        "description": "the \"Password\" textbox",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Password",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Password",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtPwd$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtPwd"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.1156
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Password",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.password"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "textbox",
+          "name": "Password"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s4_sign_on",
+      "intent": "Submit credentials to sign on to the back office.",
+      "action": "click",
+      "target": {
+        "description": "the \"Sign On\" button",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnSignOn$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(3) > td > input#ctl00_ContentPlaceHolder1_btnSignOn"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0352,
+            "ny": 0.1456
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Sign On",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Servicing"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s5_member_no",
+      "intent": "Enter the target member number into the Member Search field.",
+      "action": "type",
+      "target": {
+        "description": "the textbox next to \"Member No.\" in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Member No.",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtMbrNo$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtMbrNo"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1317,
+            "ny": 0.0931
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$param": "memberNumber"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "text_present": "Member No."
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s6_search",
+      "intent": "Execute the search for the member number.",
+      "action": "click",
+      "target": {
+        "description": "the \"Search\" button in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Search",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Search",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "\"100482\"",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnSearch$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr > td:nth-of-type(3) > input#ctl00_ContentPlaceHolder1_btnSearch"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.2155,
+            "ny": 0.0931
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Search",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Search"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Status"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    }
+  ],
+  "signals": [],
+  "checkpoint": {
+    "all": [
+      {
+        "text_present": "Member Detail"
+      },
+      {
+        "value_matches": {
+          "target": {
+            "description": "The Share Savings sub-account number for the member.",
+            "frame": {
+              "index": 2
+            },
+            "strategies": [
+              {
+                "kind": "anchor",
+                "anchorText": "Opened",
+                "role": "cell",
+                "ordinal": 0
+              },
+              {
+                "kind": "css",
+                "value": "table:nth-of-type(1) > tbody > tr:nth-of-type(2) > td:nth-of-type(1)"
+              },
+              {
+                "kind": "coords",
+                "nx": 0.1411,
+                "ny": 0.2244
+              }
+            ],
+            "recordedRank": 0,
+            "guard": {
+              "role": "cell",
+              "tag": "td"
+            }
+          },
+          "pattern": "^[0-9]{4}-[0-9]{5,7}$"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "discoveryRunId": "discovery-run",
+    "model": "claude-sonnet-5",
+    "recordedAt": "2026-08-30T03:16:51.007Z",
+    "evidenceDir": "evidence/discovery-run",
+    "supersededSignals": [
+      "member_not_found"
+    ],
+    "selfReplay": {
+      "passed": true,
+      "runId": "replay-selfverify"
+    }
+  },
+  "stats": {
+    "replays": 1,
+    "successes": 1,
+    "lastVerifiedAt": "2026-08-30T03:16:51.665Z"
+  }
+}

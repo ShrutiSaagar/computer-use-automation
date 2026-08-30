@@ -1,0 +1,18 @@
+{
+  "runId": "replay-invalid-input",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:35.836Z",
+  "durationMs": 1,
+  "evidenceDir": "evidence/replay-invalid-input",
+  "steps": [],
+  "flags": [],
+  "status": "failed",
+  "error": {
+    "class": "invalid_input",
+    "stepId": "(pre-flight)",
+    "message": "input \"memberNumber\" must match /^[0-9]{6}$/, got \"abc\"",
+    "expected": "memberNumber: string, accountType: string, openingDeposit: number",
+    "observed": "{\"memberNumber\":\"abc\",\"accountType\":\"Money Market\",\"openingDeposit\":\"50.00\"}"
+  }
+}

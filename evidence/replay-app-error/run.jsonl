@@ -1,0 +1,6 @@
+{"ts":"2026-08-30T03:17:22.170Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@1","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"]}
+{"ts":"2026-08-30T03:17:22.208Z","seq":1,"type":"acted","stepId":"s1_navigate","action":"navigate"}
+{"ts":"2026-08-30T03:17:22.232Z","seq":2,"type":"acted","stepId":"s2_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
+{"ts":"2026-08-30T03:17:22.271Z","seq":3,"type":"acted","stepId":"s3_password","action":"type","control":"Password","value":"⟪secret⟫"}
+{"ts":"2026-08-30T03:17:22.340Z","seq":4,"type":"acted","stepId":"s4_sign_on","action":"click","control":"Sign On"}
+{"ts":"2026-08-30T03:17:22.386Z","seq":5,"type":"signal_matched","signal":"app_error","classify":"hard_failure","phase":"post","stepId":"s4_sign_on"}

@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "1.0",
+  "tenantId": "northstar-fcu",
+  "institution": "Northstar Federal Credit Union",
+  "appliesTo": { "capabilityId": "member.subaccount.open", "capabilityVersion": 1 },
+  "notes": "Northstar runs the same CU-Core 8.2 product as Riverbend, configured with different field captions and an extra compliance banner after sign-on. Nothing was re-recorded: the flow, the risk classifications, the parameters, the outputs and the error model all come from the Riverbend recording. This file is the entire difference between the two institutions -- seven renamed controls and one extra interstitial. That ratio is the multi-tenant argument.",
+
+  "entryUrl": "http://localhost:4311/",
+
+  "steps": {
+    "s5_member_no": {
+      "target": {
+        "strategies": [
+          { "kind": "anchor", "anchorText": "Account Number", "role": "textbox", "ordinal": 0 },
+          { "kind": "id_pattern", "regex": "txtMbrNo$" }
+        ]
+      },
+      "waitFor": { "text_present": "Account Number" }
+    },
+    "s6_search": {
+      "target": {
+        "strategies": [{ "kind": "role_name", "role": "button", "name": "Find Member", "exact": true }],
+        "guard": { "role": "button", "name": "Find Member" }
+      },
+      "waitFor": { "node_visible": { "role": "button", "name": "Find Member" } }
+    },
+    "s7_new_sub_account": {
+      "target": {
+        "strategies": [{ "kind": "role_name", "role": "button", "name": "Open Sub Account", "exact": true }],
+        "guard": { "role": "button", "name": "Open Sub Account" }
+      },
+      "waitFor": { "node_visible": { "role": "button", "name": "Open Sub Account" } },
+      "checkpoint": { "node_visible": { "role": "combobox", "name": "Product" } }
+    },
+    "s8_account_type": {
+      "target": {
+        "strategies": [{ "kind": "role_name", "role": "combobox", "name": "Product", "exact": true }],
+        "guard": { "role": "combobox", "name": "Product" }
+      },
+      "waitFor": { "node_visible": { "role": "combobox", "name": "Product" } }
+    },
+    "s9_opening_deposit": {
+      "target": {
+        "strategies": [
+          { "kind": "anchor", "anchorText": "Initial Deposit", "role": "textbox", "ordinal": 0 },
+          { "kind": "id_pattern", "regex": "txtDeposit$" }
+        ]
+      },
+      "waitFor": { "text_present": "Initial Deposit" }
+    },
+    "s10_continue": {
+      "target": {
+        "strategies": [{ "kind": "role_name", "role": "button", "name": "Next", "exact": true }],
+        "guard": { "role": "button", "name": "Next" }
+      },
+      "waitFor": { "node_visible": { "role": "button", "name": "Next" } }
+    },
+    "s11_open_account": {
+      "target": {
+        "strategies": [{ "kind": "role_name", "role": "button", "name": "Submit Request", "exact": true }],
+        "guard": { "role": "button", "name": "Submit Request" }
+      },
+      "waitFor": { "node_visible": { "role": "button", "name": "Submit Request" } }
+    }
+  },
+
+  "addSignals": [
+    {
+      "id": "northstar_compliance_notice",
+      "priority": 15,
+      "classify": "recoverable",
+      "description": "Northstar interposes a 12 CFR 748 monitoring notice after sign-on. Riverbend does not, so the base recording has never seen this screen.",
+      "when": { "text_present": "Activity in this system is monitored" },
+      "recover": {
+        "do": "click",
+        "target": {
+          "description": "the Continue button on Northstar's compliance notice",
+          "strategies": [{ "kind": "role_name", "role": "button", "name": "Continue", "exact": true }],
+          "recordedRank": 0,
+          "guard": { "role": "button", "name": "Continue" }
+        },
+        "then": "continue", "maxTimes": 2, "waitMs": 0
+      }
+    }
+  ]
+}

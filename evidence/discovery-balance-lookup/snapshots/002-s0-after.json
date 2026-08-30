@@ -1,0 +1,344 @@
+{
+ "url": "http://localhost:4310/",
+ "frameUrls": {
+  "f1": "http://localhost:4310/"
+ },
+ "nodes": [
+  {
+   "ref": "e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "e1",
+    "box": "0,0,1280,130"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 130
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 0,
+   "index": 0
+  },
+  {
+   "ref": "e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "e2",
+    "box": "0,0,1280,27"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 27
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 1
+  },
+  {
+   "ref": "e3",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e3",
+    "box": "8,35,382,95"
+   },
+   "box": {
+    "x": 8,
+    "y": 35,
+    "w": 382,
+    "h": 95
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 2
+  },
+  {
+   "ref": "e4",
+   "role": "generic",
+   "name": "",
+   "text": "Operator Sign On",
+   "props": {
+    "ref": "e4",
+    "box": "9,36,380,22"
+   },
+   "box": {
+    "x": 9,
+    "y": 36,
+    "w": 380,
+    "h": 22
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 2,
+   "index": 3
+  },
+  {
+   "ref": "e6",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e6",
+    "box": "9,58,262,71"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 262,
+    "h": 71
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 2,
+   "index": 4
+  },
+  {
+   "ref": "e7",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e7",
+    "box": "9,58,262,71"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 262,
+    "h": 71
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 3,
+   "index": 5
+  },
+  {
+   "ref": "e8",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e8",
+    "box": "9,58,262,23"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 262,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 4,
+   "index": 6
+  },
+  {
+   "ref": "e9",
+   "role": "cell",
+   "name": "Operator ID",
+   "props": {
+    "ref": "e9",
+    "box": "9,58,72,23"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 72,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 5,
+   "index": 7
+  },
+  {
+   "ref": "e11",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e11",
+    "box": "81,58,190,23"
+   },
+   "box": {
+    "x": 81,
+    "y": 58,
+    "w": 190,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 5,
+   "index": 8
+  },
+  {
+   "ref": "e12",
+   "role": "textbox",
+   "name": "Operator ID",
+   "props": {
+    "ref": "e12",
+    "box": "87,61,178,17"
+   },
+   "box": {
+    "x": 87,
+    "y": 61,
+    "w": 178,
+    "h": 17
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 6,
+   "index": 9
+  },
+  {
+   "ref": "e13",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e13",
+    "box": "9,81,262,23"
+   },
+   "box": {
+    "x": 9,
+    "y": 81,
+    "w": 262,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 4,
+   "index": 10
+  },
+  {
+   "ref": "e14",
+   "role": "cell",
+   "name": "Password",
+   "props": {
+    "ref": "e14",
+    "box": "9,81,72,23"
+   },
+   "box": {
+    "x": 9,
+    "y": 81,
+    "w": 72,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 5,
+   "index": 11
+  },
+  {
+   "ref": "e16",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e16",
+    "box": "81,81,190,23"
+   },
+   "box": {
+    "x": 81,
+    "y": 81,
+    "w": 190,
+    "h": 23
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 5,
+   "index": 12
+  },
+  {
+   "ref": "e17",
+   "role": "textbox",
+   "name": "Password",
+   "props": {
+    "ref": "e17",
+    "box": "87,84,178,17"
+   },
+   "box": {
+    "x": 87,
+    "y": 84,
+    "w": 178,
+    "h": 17
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 6,
+   "index": 13
+  },
+  {
+   "ref": "e18",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e18",
+    "box": "9,104,262,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 104,
+    "w": 262,
+    "h": 25
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 4,
+   "index": 14
+  },
+  {
+   "ref": "e19",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "e19",
+    "box": "9,104,262,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 104,
+    "w": 262,
+    "h": 25
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 5,
+   "index": 15
+  },
+  {
+   "ref": "e20",
+   "role": "button",
+   "name": "Sign On",
+   "props": {
+    "ref": "e20",
+    "box": "15,107,60,19"
+   },
+   "box": {
+    "x": 15,
+    "y": 107,
+    "w": 60,
+    "h": 19
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 6,
+   "index": 16
+  }
+ ]
+}

@@ -1,0 +1,134 @@
+{
+  "runId": "replay-unrecorded-screen-no-operator",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:23.483Z",
+  "durationMs": 10948,
+  "evidenceDir": "evidence/replay-unrecorded-screen-no-operator",
+  "steps": [
+    {
+      "stepId": "s1_navigate",
+      "action": "navigate",
+      "status": "ok",
+      "ms": 22,
+      "recoveries": []
+    },
+    {
+      "stepId": "s2_operator_id",
+      "action": "type",
+      "status": "ok",
+      "ms": 14,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s3_password",
+      "action": "type",
+      "status": "ok",
+      "ms": 43,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s4_sign_on",
+      "action": "click",
+      "status": "ok",
+      "ms": 96,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s5_member_no",
+      "action": "type",
+      "status": "ok",
+      "ms": 12,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s6_search",
+      "action": "click",
+      "status": "ok",
+      "ms": 233,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s7_new_sub_account",
+      "action": "click",
+      "status": "ok",
+      "ms": 210,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s8_account_type",
+      "action": "select",
+      "status": "ok",
+      "ms": 13,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s9_opening_deposit",
+      "action": "type",
+      "status": "ok",
+      "ms": 15,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s10_continue",
+      "action": "click",
+      "status": "failed",
+      "ms": 10232,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    }
+  ],
+  "flags": [],
+  "status": "failed",
+  "error": {
+    "class": "checkpoint_failed",
+    "stepId": "s10_continue",
+    "message": "step \"s10_continue\" could not proceed: Click Continue to move to the review screen.",
+    "expected": "a cell named \"Member\" is visible",
+    "observed": " Riverbend Credit Union — CU-Core Back Office 8.2 Servicing Member Search Reports Sign Out Riverbend Credit Union — CU-Core Back Office 8.2 Supervisor Override Required This product requires a supervisor override code before the request can be reviewed. Contact your branch supervisor for today's"
+  }
+}

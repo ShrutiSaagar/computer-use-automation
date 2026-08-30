@@ -1,0 +1,167 @@
+<!doctype html>
+<meta charset="utf-8"><title>CUA Operator Console</title>
+<style>
+ :root { --bg:#0f1115; --panel:#171a21; --line:#272b35; --fg:#d7dae0; --dim:#8b91a0;
+         --ok:#4ec9a0; --warn:#e2b341; --err:#e06c6c; --acc:#5aa1e3; }
+ * { box-sizing:border-box }
+ body { margin:0; background:var(--bg); color:var(--fg); font:13px/1.5 ui-monospace,SFMono-Regular,Menlo,monospace }
+ header { padding:10px 14px; border-bottom:1px solid var(--line); display:flex; gap:16px; align-items:center }
+ h1 { font-size:13px; margin:0; font-weight:600; letter-spacing:.02em }
+ .lease { padding:2px 9px; border-radius:3px; font-weight:600; font-size:11px; letter-spacing:.06em }
+ .lease.automation { background:#1d2a38; color:var(--acc) }
+ .lease.human { background:#3a2f14; color:var(--warn) }
+ main { display:grid; grid-template-columns: 1fr 420px; gap:0; height:calc(100vh - 45px) }
+ #stage { border-right:1px solid var(--line); overflow:auto; padding:12px; background:#0b0d11 }
+ canvas { background:#fff; box-shadow:0 0 0 1px var(--line); display:block; max-width:100%; }
+ canvas.live { outline:2px solid var(--warn); outline-offset:2px; cursor:crosshair }
+ aside { display:flex; flex-direction:column; overflow:hidden }
+ section { border-bottom:1px solid var(--line); padding:12px 14px }
+ h2 { font-size:11px; text-transform:uppercase; letter-spacing:.08em; color:var(--dim); margin:0 0 8px }
+ label { display:block; color:var(--dim); font-size:11px; margin:6px 0 2px }
+ input,select,button,textarea { font:12px ui-monospace,Menlo,monospace; background:#0e1116; color:var(--fg);
+   border:1px solid var(--line); border-radius:3px; padding:5px 7px; width:100% }
+ button { cursor:pointer; background:#1d2129; width:auto; padding:6px 12px }
+ button:hover { border-color:var(--acc) }
+ button.primary { background:#1d3550; border-color:var(--acc); color:#cfe6ff }
+ button.danger { background:#3a1d1d; border-color:#5c2b2b; color:#f0b8b8 }
+ button:disabled { opacity:.35; cursor:not-allowed }
+ .row { display:flex; gap:6px; flex-wrap:wrap; margin-top:10px }
+ #interv { background:#241d0e; border:1px solid #4a3a14 }
+ #interv .why { color:var(--warn); font-weight:600; margin-bottom:6px }
+ dl { display:grid; grid-template-columns:88px 1fr; gap:2px 10px; margin:6px 0 0 }
+ dt { color:var(--dim) } dd { margin:0; word-break:break-word }
+ #log { flex:1; overflow:auto; padding:10px 14px; font-size:11.5px; color:var(--dim) }
+ #log div { padding:1px 0; white-space:pre-wrap; word-break:break-word }
+ #log .hi { color:var(--warn) } #log .ok { color:var(--ok) } #log .er { color:var(--err) }
+ .hint { color:var(--dim); font-size:11px; margin-top:8px; line-height:1.5 }
+</style>
+<header>
+  <h1>CUA OPERATOR CONSOLE</h1>
+  <span id="lease" class="lease automation">AUTOMATION HAS CONTROL</span>
+  <span id="status" style="color:var(--dim);font-size:11px"></span>
+</header>
+<main>
+  <div id="stage"><canvas id="screen" width="1280" height="800"></canvas></div>
+  <aside>
+    <section>
+      <h2>Start a run</h2>
+      <label>capability</label><select id="cap"></select>
+      <label>member number</label><input id="memberNumber" value="100482">
+      <label>account type</label><input id="accountType" value="Money Market">
+      <label>opening deposit</label><input id="openingDeposit" value="50.00">
+      <label>inject a condition into the target app</label>
+      <select id="chaos">
+        <option value="">none (happy path)</option>
+        <option value="supervisor_override" selected>supervisor_override — an unrecorded screen</option>
+        <option value="session_timeout">session_timeout — recovered automatically</option>
+        <option value="interstitial">interstitial — recovered automatically</option>
+        <option value="not_found">not_found — a business outcome</option>
+      </select>
+      <div class="row"><button class="primary" id="start">Start run</button></div>
+    </section>
+
+    <section id="interv" style="display:none">
+      <h2>Intervention</h2>
+      <div class="why" id="ivWhy"></div>
+      <dl id="ivDl"></dl>
+      <div class="hint">You have control of the live session. Click and type on the screen to the
+        left — your input is forwarded to the same browser the automation was driving.</div>
+      <label>note for the evidence record</label>
+      <input id="ivNote" placeholder="what did you do?">
+      <div class="row" id="ivActions"></div>
+    </section>
+
+    <section><h2>Activity</h2></section>
+    <div id="log"></div>
+  </aside>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+const cv = $('screen'), ctx = cv.getContext('2d');
+let controller = 'automation', intervention = null;
+
+const ws = new WebSocket(`ws://${location.host}/ws`);
+ws.onmessage = (ev) => {
+  const m = JSON.parse(ev.data);
+  if (m.type === 'frame') {
+    const img = new Image();
+    img.onload = () => { cv.width = img.width; cv.height = img.height; ctx.drawImage(img, 0, 0); };
+    img.src = 'data:image/jpeg;base64,' + m.data;
+  } else if (m.type === 'log') {
+    const d = document.createElement('div');
+    d.textContent = m.text;
+    if (/INTERVENTION|control handed/.test(m.text)) d.className = 'hi';
+    else if (/success|verified|returned to automation/.test(m.text)) d.className = 'ok';
+    else if (/failed|crashed|ignored/.test(m.text)) d.className = 'er';
+    $('log').appendChild(d); $('log').scrollTop = 1e9;
+  } else if (m.type === 'state') render(m.state);
+};
+
+function render(s) {
+  controller = s.controller; intervention = s.intervention;
+  $('lease').className = 'lease ' + controller;
+  $('lease').textContent = controller === 'human' ? 'YOU HAVE CONTROL' : 'AUTOMATION HAS CONTROL';
+  cv.classList.toggle('live', controller === 'human');
+  $('status').textContent = s.running ? 'run in progress' : (s.lastResult ? 'last run: ' + s.lastResult.status : 'idle');
+  $('start').disabled = !!s.running;
+
+  if (!intervention) { $('interv').style.display = 'none'; return; }
+  $('interv').style.display = '';
+  $('ivWhy').textContent = intervention.context.summary;
+  const c = intervention.context;
+  const rows = [['id', intervention.id], ['reason', intervention.reason], ['step', intervention.stepId || '-'],
+                ['intent', intervention.stepIntent || '-'], ['expected', c.expected || '-'],
+                ['observed', (c.observed || '-').slice(0, 220)]];
+  if (c.aboutToSubmit) for (const [k, v] of Object.entries(c.aboutToSubmit)) rows.push(['» ' + k, v]);
+  $('ivDl').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${escapeHtml(String(v))}</dd>`).join('');
+  $('ivActions').innerHTML = '';
+  for (const r of intervention.allowedResolutions) {
+    const b = document.createElement('button');
+    b.textContent = r.replace(/_/g, ' ');
+    if (r === 'resume' || r === 'approve') b.className = 'primary';
+    if (r === 'abort' || r === 'reject') b.className = 'danger';
+    b.onclick = () => resolve(r);
+    $('ivActions').appendChild(b);
+  }
+}
+const escapeHtml = (s) => s.replace(/[&<>]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
+
+async function resolve(resolution) {
+  const note = $('ivNote').value || '';
+  await fetch(`/api/interventions/${intervention.id}/resolve`, {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ resolution, note }),
+  });
+}
+
+// Canvas coordinates -> page coordinates. The screencast is capped at the
+// viewport size, so this is just the CSS-scaling factor of the displayed canvas.
+function toPage(e) {
+  const r = cv.getBoundingClientRect();
+  return { x: (e.clientX - r.left) * (cv.width / r.width), y: (e.clientY - r.top) * (cv.height / r.height) };
+}
+cv.addEventListener('click', (e) => { const p = toPage(e); ws.send(JSON.stringify({ type: 'mouse', action: 'click', ...p })); });
+window.addEventListener('keydown', (e) => {
+  if (controller !== 'human') return;
+  if (e.target.tagName === 'INPUT' || e.target.tagName === 'SELECT' || e.target.tagName === 'TEXTAREA') return;
+  e.preventDefault();
+  const text = e.key.length === 1 ? e.key : undefined;
+  ws.send(JSON.stringify({ type: 'key', key: e.key, text }));
+});
+
+$('start').onclick = async () => {
+  await fetch('/api/runs', {
+    method: 'POST', headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({
+      capability: $('cap').value,
+      inputs: { memberNumber: $('memberNumber').value, accountType: $('accountType').value, openingDeposit: $('openingDeposit').value },
+      chaos: $('chaos').value || undefined,
+    }),
+  });
+};
+
+fetch('/api/capabilities').then((r) => r.json()).then((cs) => {
+  $('cap').innerHTML = cs.map((c) => `<option value="${c.id}@${c.version}">${c.id}@${c.version} (${c.status})</option>`).join('');
+});
+fetch('/api/state').then((r) => r.json()).then(render);
+</script>

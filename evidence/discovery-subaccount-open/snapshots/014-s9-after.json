@@ -1,0 +1,1045 @@
+{
+ "url": "http://localhost:4310/",
+ "frameUrls": {
+  "f1": "http://localhost:4310/",
+  "f2": "http://localhost:4310/nav",
+  "f3": "http://localhost:4310/content/member/100482/subaccount/new"
+ },
+ "nodes": [
+  {
+   "ref": "f1e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e1",
+    "box": "0,0,1280,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1280,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 0,
+   "index": 0
+  },
+  {
+   "ref": "f1e2",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f1e2",
+    "box": "0,0,170,800"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 1
+  },
+  {
+   "ref": "f2e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e1",
+    "box": "0,0,170,136"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 136
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 2,
+   "index": 2
+  },
+  {
+   "ref": "f2e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f2e2",
+    "box": "0,0,170,57"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 170,
+    "h": 57
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 3
+  },
+  {
+   "ref": "f2e3",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e3",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 3,
+   "index": 4
+  },
+  {
+   "ref": "f2e4",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e4",
+    "box": "0,57,170,79"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 79
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 4,
+   "index": 5
+  },
+  {
+   "ref": "f2e5",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e5",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 6
+  },
+  {
+   "ref": "f2e6",
+   "role": "cell",
+   "name": "Servicing",
+   "props": {
+    "ref": "f2e6",
+    "box": "0,57,170,22"
+   },
+   "box": {
+    "x": 0,
+    "y": 57,
+    "w": 170,
+    "h": 22
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 7
+  },
+  {
+   "ref": "f2e7",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e7",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 8
+  },
+  {
+   "ref": "f2e8",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e8",
+    "box": "0,79,170,20"
+   },
+   "box": {
+    "x": 0,
+    "y": 79,
+    "w": 170,
+    "h": 20
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 9
+  },
+  {
+   "ref": "f2e10",
+   "role": "link",
+   "name": "Member Search",
+   "text": "",
+   "props": {
+    "ref": "f2e10",
+    "cursor": "pointer",
+    "box": "3,83,79,12",
+    "url": "/content/search"
+   },
+   "box": {
+    "x": 3,
+    "y": 83,
+    "w": 79,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 10
+  },
+  {
+   "ref": "f2e11",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e11",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 11
+  },
+  {
+   "ref": "f2e12",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e12",
+    "box": "0,98,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 98,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 12
+  },
+  {
+   "ref": "f2e14",
+   "role": "link",
+   "name": "Reports",
+   "text": "",
+   "props": {
+    "ref": "f2e14",
+    "cursor": "pointer",
+    "box": "3,102,38,12",
+    "url": "/content/reports"
+   },
+   "box": {
+    "x": 3,
+    "y": 102,
+    "w": 38,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 13
+  },
+  {
+   "ref": "f2e15",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e15",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 5,
+   "index": 14
+  },
+  {
+   "ref": "f2e16",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f2e16",
+    "box": "0,117,170,19"
+   },
+   "box": {
+    "x": 0,
+    "y": 117,
+    "w": 170,
+    "h": 19
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 6,
+   "index": 15
+  },
+  {
+   "ref": "f2e18",
+   "role": "link",
+   "name": "Sign Out",
+   "text": "",
+   "props": {
+    "ref": "f2e18",
+    "cursor": "pointer",
+    "box": "3,121,44,12",
+    "url": "/logout"
+   },
+   "box": {
+    "x": 3,
+    "y": 121,
+    "w": 44,
+    "h": 12
+   },
+   "frame": "f2",
+   "frameOrdinal": 1,
+   "depth": 7,
+   "index": 16
+  },
+  {
+   "ref": "f1e3",
+   "role": "iframe",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "f1e3",
+    "box": "171,0,1109,800"
+   },
+   "box": {
+    "x": 171,
+    "y": 0,
+    "w": 1109,
+    "h": 800
+   },
+   "frame": "f1",
+   "frameOrdinal": 0,
+   "depth": 1,
+   "index": 17
+  },
+  {
+   "ref": "f3e1",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "active": "true",
+    "ref": "f3e1",
+    "box": "0,0,1109,218"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 218
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 2,
+   "index": 18
+  },
+  {
+   "ref": "f3e2",
+   "role": "generic",
+   "name": "",
+   "text": "Riverbend Credit Union — CU-Core Back Office 8.2",
+   "props": {
+    "ref": "f3e2",
+    "box": "0,0,1109,27"
+   },
+   "box": {
+    "x": 0,
+    "y": 0,
+    "w": 1109,
+    "h": 27
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 19
+  },
+  {
+   "ref": "f3e3",
+   "role": "generic",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e3",
+    "box": "8,35,562,183"
+   },
+   "box": {
+    "x": 8,
+    "y": 35,
+    "w": 562,
+    "h": 183
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 3,
+   "index": 20
+  },
+  {
+   "ref": "f3e4",
+   "role": "generic",
+   "name": "",
+   "text": "Review Sub-Account Request",
+   "props": {
+    "ref": "f3e4",
+    "box": "9,36,560,22"
+   },
+   "box": {
+    "x": 9,
+    "y": 36,
+    "w": 560,
+    "h": 22
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 21
+  },
+  {
+   "ref": "f3e5",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e5",
+    "box": "9,58,249,103"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 249,
+    "h": 103
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 22
+  },
+  {
+   "ref": "f3e6",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e6",
+    "box": "9,58,249,103"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 249,
+    "h": 103
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 5,
+   "index": 23
+  },
+  {
+   "ref": "f3e7",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e7",
+    "box": "9,58,249,103"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 249,
+    "h": 103
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 6,
+   "index": 24
+  },
+  {
+   "ref": "f3e8",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e8",
+    "box": "9,58,249,103"
+   },
+   "box": {
+    "x": 9,
+    "y": 58,
+    "w": 249,
+    "h": 103
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 7,
+   "index": 25
+  },
+  {
+   "ref": "f3e9",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e9",
+    "box": "13,62,241,95"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 241,
+    "h": 95
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 8,
+   "index": 26
+  },
+  {
+   "ref": "f3e10",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e10",
+    "box": "13,62,241,95"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 241,
+    "h": 95
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 9,
+   "index": 27
+  },
+  {
+   "ref": "f3e11",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e11",
+    "box": "13,62,241,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 241,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 28
+  },
+  {
+   "ref": "f3e12",
+   "role": "cell",
+   "name": "Member",
+   "props": {
+    "ref": "f3e12",
+    "box": "13,62,89,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 62,
+    "w": 89,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 29
+  },
+  {
+   "ref": "f3e13",
+   "role": "cell",
+   "name": "100482 Testerson, Ada Q.",
+   "props": {
+    "ref": "f3e13",
+    "box": "102,62,152,19"
+   },
+   "box": {
+    "x": 102,
+    "y": 62,
+    "w": 152,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 30
+  },
+  {
+   "ref": "f3e15",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e15",
+    "box": "13,81,241,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 81,
+    "w": 241,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 31
+  },
+  {
+   "ref": "f3e16",
+   "role": "cell",
+   "name": "Account Type",
+   "props": {
+    "ref": "f3e16",
+    "box": "13,81,89,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 81,
+    "w": 89,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 32
+  },
+  {
+   "ref": "f3e17",
+   "role": "cell",
+   "name": "Money Market",
+   "props": {
+    "ref": "f3e17",
+    "box": "102,81,152,19"
+   },
+   "box": {
+    "x": 102,
+    "y": 81,
+    "w": 152,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 33
+  },
+  {
+   "ref": "f3e19",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e19",
+    "box": "13,100,241,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 100,
+    "w": 241,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 34
+  },
+  {
+   "ref": "f3e20",
+   "role": "cell",
+   "name": "Opening Deposit",
+   "props": {
+    "ref": "f3e20",
+    "box": "13,100,89,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 100,
+    "w": 89,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 35
+  },
+  {
+   "ref": "f3e21",
+   "role": "cell",
+   "name": "$50.00",
+   "props": {
+    "ref": "f3e21",
+    "box": "102,100,152,19"
+   },
+   "box": {
+    "x": 102,
+    "y": 100,
+    "w": 152,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 36
+  },
+  {
+   "ref": "f3e23",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e23",
+    "box": "13,119,241,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 119,
+    "w": 241,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 37
+  },
+  {
+   "ref": "f3e24",
+   "role": "cell",
+   "name": "Funding Account",
+   "props": {
+    "ref": "f3e24",
+    "box": "13,119,89,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 119,
+    "w": 89,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 38
+  },
+  {
+   "ref": "f3e25",
+   "role": "cell",
+   "name": "0001-100482",
+   "props": {
+    "ref": "f3e25",
+    "box": "102,119,152,19"
+   },
+   "box": {
+    "x": 102,
+    "y": 119,
+    "w": 152,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 39
+  },
+  {
+   "ref": "f3e26",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e26",
+    "box": "13,138,241,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 138,
+    "w": 241,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 10,
+   "index": 40
+  },
+  {
+   "ref": "f3e27",
+   "role": "cell",
+   "name": "Notes",
+   "props": {
+    "ref": "f3e27",
+    "box": "13,138,89,19"
+   },
+   "box": {
+    "x": 13,
+    "y": 138,
+    "w": 89,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 41
+  },
+  {
+   "ref": "f3e28",
+   "role": "cell",
+   "name": "(none)",
+   "props": {
+    "ref": "f3e28",
+    "box": "102,138,152,19"
+   },
+   "box": {
+    "x": 102,
+    "y": 138,
+    "w": 152,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 11,
+   "index": 42
+  },
+  {
+   "ref": "f3e29",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e29",
+    "box": "9,161,105,31"
+   },
+   "box": {
+    "x": 9,
+    "y": 161,
+    "w": 105,
+    "h": 31
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 43
+  },
+  {
+   "ref": "f3e30",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e30",
+    "box": "9,161,105,31"
+   },
+   "box": {
+    "x": 9,
+    "y": 161,
+    "w": 105,
+    "h": 31
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 5,
+   "index": 44
+  },
+  {
+   "ref": "f3e31",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e31",
+    "box": "9,161,105,31"
+   },
+   "box": {
+    "x": 9,
+    "y": 161,
+    "w": 105,
+    "h": 31
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 6,
+   "index": 45
+  },
+  {
+   "ref": "f3e32",
+   "role": "cell",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e32",
+    "box": "9,161,105,31"
+   },
+   "box": {
+    "x": 9,
+    "y": 161,
+    "w": 105,
+    "h": 31
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 7,
+   "index": 46
+  },
+  {
+   "ref": "f3e34",
+   "role": "button",
+   "name": "Open Account",
+   "props": {
+    "ref": "f3e34",
+    "box": "15,167,93,19"
+   },
+   "box": {
+    "x": 15,
+    "y": 167,
+    "w": 93,
+    "h": 19
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 8,
+   "index": 47
+  },
+  {
+   "ref": "f3e35",
+   "role": "table",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e35",
+    "box": "9,192,425,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 192,
+    "w": 425,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 4,
+   "index": 48
+  },
+  {
+   "ref": "f3e36",
+   "role": "rowgroup",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e36",
+    "box": "9,192,425,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 192,
+    "w": 425,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 5,
+   "index": 49
+  },
+  {
+   "ref": "f3e37",
+   "role": "row",
+   "name": "",
+   "text": "",
+   "props": {
+    "ref": "f3e37",
+    "box": "9,192,425,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 192,
+    "w": 425,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 6,
+   "index": 50
+  },
+  {
+   "ref": "f3e38",
+   "role": "cell",
+   "name": "This posts the account opening to the core. It cannot be undone from this screen.",
+   "props": {
+    "ref": "f3e38",
+    "box": "9,192,425,25"
+   },
+   "box": {
+    "x": 9,
+    "y": 192,
+    "w": 425,
+    "h": 25
+   },
+   "frame": "f3",
+   "frameOrdinal": 2,
+   "depth": 7,
+   "index": 51
+  }
+ ]
+}

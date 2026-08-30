@@ -1,0 +1,8 @@
+{"ts":"2026-08-30T03:17:08.896Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@1","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"]}
+{"ts":"2026-08-30T03:17:08.936Z","seq":1,"type":"acted","stepId":"s1_navigate","action":"navigate"}
+{"ts":"2026-08-30T03:17:08.960Z","seq":2,"type":"acted","stepId":"s2_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
+{"ts":"2026-08-30T03:17:09.001Z","seq":3,"type":"acted","stepId":"s3_password","action":"type","control":"Password","value":"⟪secret⟫"}
+{"ts":"2026-08-30T03:17:09.077Z","seq":4,"type":"acted","stepId":"s4_sign_on","action":"click","control":"Sign On"}
+{"ts":"2026-08-30T03:17:09.119Z","seq":5,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
+{"ts":"2026-08-30T03:17:09.167Z","seq":6,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
+{"ts":"2026-08-30T03:17:09.337Z","seq":7,"type":"signal_matched","signal":"member_not_found","classify":"business_outcome","phase":"post","stepId":"s6_search"}

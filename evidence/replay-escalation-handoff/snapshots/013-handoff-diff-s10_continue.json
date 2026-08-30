@@ -1,0 +1,33 @@
+{
+ "appeared": [
+  "cell \"Member\"",
+  "cell \"⟪identifier:memberNumber⟫ Testerson, Ada Q.\"",
+  "cell \"Account Type\"",
+  "cell \"Money Market\"",
+  "cell \"Opening Deposit\"",
+  "cell \"$⟪amount:openingDeposit⟫\"",
+  "cell \"Funding Account\"",
+  "cell \"0001-⟪identifier:memberNumber⟫\"",
+  "cell \"Notes\"",
+  "cell \"(none)\"",
+  "button \"Open Account\"",
+  "cell \"This posts the account opening to the core. It cannot be undone from this screen.\""
+ ],
+ "disappeared": [
+  "cell \"This product requires a supervisor override code before the request can be reviewed. Contact your branch supervisor for today's code.\"",
+  "cell \"Override Code\"",
+  "button \"Apply Override\""
+ ],
+ "urlBefore": "http://localhost:4310/",
+ "urlAfter": "http://localhost:4310/",
+ "frameUrlsBefore": {
+  "f2": "http://localhost:4310/",
+  "f3": "http://localhost:4310/nav",
+  "f4": "http://localhost:4310/content/member/⟪identifier:memberNumber⟫/subaccount/new"
+ },
+ "frameUrlsAfter": {
+  "f2": "http://localhost:4310/",
+  "f3": "http://localhost:4310/nav",
+  "f4": "http://localhost:4310/content/member/⟪identifier:memberNumber⟫/subaccount/override"
+ }
+}

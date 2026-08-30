@@ -1,0 +1,86 @@
+{
+  "runId": "replay-member-not-found",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 1,
+  "startedAt": "2026-08-30T03:17:08.895Z",
+  "durationMs": 479,
+  "evidenceDir": "evidence/replay-member-not-found",
+  "steps": [
+    {
+      "stepId": "s1_navigate",
+      "action": "navigate",
+      "status": "ok",
+      "ms": 20,
+      "recoveries": []
+    },
+    {
+      "stepId": "s2_operator_id",
+      "action": "type",
+      "status": "ok",
+      "ms": 14,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s3_password",
+      "action": "type",
+      "status": "ok",
+      "ms": 47,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s4_sign_on",
+      "action": "click",
+      "status": "ok",
+      "ms": 103,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s5_member_no",
+      "action": "type",
+      "status": "ok",
+      "ms": 11,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s6_search",
+      "action": "click",
+      "status": "ok",
+      "ms": 251,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    }
+  ],
+  "flags": [],
+  "status": "business_outcome",
+  "outcome": {
+    "code": "MEMBER_NOT_FOUND",
+    "message": "No member with that number exists at this institution.",
+    "data": {
+      "searchedFor": "⟪identifier:memberNumber⟫"
+    }
+  }
+}

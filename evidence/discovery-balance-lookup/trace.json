@@ -1,0 +1,259 @@
+{
+  "goal": "Sign on to the back office, look up member 100482, and read their Share Savings account number and current balance from the member detail screen. Change nothing. The reusable capability should take the member number as its only input.",
+  "target": "http://localhost:4310/",
+  "model": "claude-sonnet-5",
+  "turns": 12,
+  "costUsd": 0.11074380000000002,
+  "blocked": [],
+  "actions": [
+    {
+      "seq": 0,
+      "tool": "navigate",
+      "why": "Open the back-office application to begin sign-on.",
+      "ok": true,
+      "url": "http://localhost:4310/",
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Operator ID"
+        },
+        {
+          "role": "textbox",
+          "name": "Operator ID"
+        },
+        {
+          "role": "cell",
+          "name": "Password"
+        },
+        {
+          "role": "textbox",
+          "name": "Password"
+        },
+        {
+          "role": "button",
+          "name": "Sign On"
+        }
+      ]
+    },
+    {
+      "seq": 1,
+      "tool": "type",
+      "why": "Enter operator ID to sign on to the back office.",
+      "ok": true,
+      "value": "{{OPERATOR_USERNAME}}",
+      "control": {
+        "role": "textbox",
+        "name": "Operator ID",
+        "id": "ctl00_ContentPlaceHolder1_txtUser",
+        "anchorText": "Operator ID",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 2,
+      "tool": "type",
+      "why": "Enter operator password to sign on to the back office.",
+      "ok": true,
+      "value": "{{OPERATOR_PASSWORD}}",
+      "control": {
+        "role": "textbox",
+        "name": "Password",
+        "id": "ctl00_ContentPlaceHolder1_txtPwd",
+        "anchorText": "Password",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 3,
+      "tool": "click",
+      "why": "Submit credentials to sign on to the back office.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Sign On",
+        "id": "ctl00_ContentPlaceHolder1_btnSignOn",
+        "anchorText": "Password",
+        "frame": ""
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "Servicing"
+        },
+        {
+          "role": "link",
+          "name": "Member Search"
+        },
+        {
+          "role": "link",
+          "name": "Reports"
+        },
+        {
+          "role": "link",
+          "name": "Sign Out"
+        },
+        {
+          "role": "cell",
+          "name": "Member No."
+        },
+        {
+          "role": "button",
+          "name": "Search"
+        }
+      ]
+    },
+    {
+      "seq": 4,
+      "tool": "type",
+      "why": "Enter the target member number into the Member Search field.",
+      "ok": true,
+      "value": "100482",
+      "control": {
+        "role": "textbox",
+        "name": "",
+        "id": "ctl00_ContentPlaceHolder1_txtMbrNo",
+        "anchorText": "Member No.",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": []
+    },
+    {
+      "seq": 5,
+      "tool": "click",
+      "why": "Execute the search for member 100482.",
+      "ok": true,
+      "control": {
+        "role": "button",
+        "name": "Search",
+        "id": "ctl00_ContentPlaceHolder1_btnSearch",
+        "anchorText": "\"100482\"",
+        "frame": "mainFrame"
+      },
+      "urlAfter": "http://localhost:4310/",
+      "appeared": [
+        {
+          "role": "cell",
+          "name": "100482"
+        },
+        {
+          "role": "cell",
+          "name": "Status"
+        },
+        {
+          "role": "cell",
+          "name": "Active"
+        },
+        {
+          "role": "cell",
+          "name": "Name"
+        },
+        {
+          "role": "cell",
+          "name": "Testerson, Ada Q."
+        },
+        {
+          "role": "cell",
+          "name": "Branch"
+        },
+        {
+          "role": "cell",
+          "name": "Riverbend"
+        },
+        {
+          "role": "cell",
+          "name": "Member Since"
+        }
+      ]
+    }
+  ],
+  "extractions": [
+    {
+      "name": "shareSavingsAccountNumber",
+      "description": "The Share Savings sub-account number for the member."
+    },
+    {
+      "name": "shareSavingsBalance",
+      "description": "The current balance of the member's Share Savings account."
+    }
+  ],
+  "finalize": {
+    "id": "member.shareSavings.lookup",
+    "name": "Look up member Share Savings account and balance",
+    "description": "Signs on to the CU-Core back office, searches for a member by member number, and reads the Share Savings sub-account number and current balance from the Member Detail screen. Read-only: changes nothing. Input is the member number; outputs are the Share Savings account number and its current balance.",
+    "inputs": [
+      {
+        "name": "memberNumber",
+        "type": "string",
+        "description": "The member number to look up.",
+        "pattern": "^[0-9]{5,7}$",
+        "sensitivity": "identifier",
+        "example": "100482"
+      }
+    ],
+    "steps": [
+      {
+        "seq": 0,
+        "intent": "Open the back-office application to begin sign-on.",
+        "risk": "safe"
+      },
+      {
+        "seq": 1,
+        "intent": "Enter operator ID to sign on to the back office.",
+        "risk": "safe"
+      },
+      {
+        "seq": 2,
+        "intent": "Enter operator password to sign on to the back office.",
+        "risk": "safe"
+      },
+      {
+        "seq": 3,
+        "intent": "Submit credentials to sign on to the back office.",
+        "risk": "safe"
+      },
+      {
+        "seq": 4,
+        "intent": "Enter the target member number into the Member Search field.",
+        "risk": "safe"
+      },
+      {
+        "seq": 5,
+        "intent": "Execute the search for the member number.",
+        "risk": "safe"
+      }
+    ],
+    "droppedSeqs": [],
+    "outputs": [
+      {
+        "name": "shareSavingsAccountNumber",
+        "type": "string",
+        "description": "The Share Savings sub-account number for the member.",
+        "pattern": "^[0-9]{4}-[0-9]{5,7}$",
+        "sensitivity": "account_number"
+      },
+      {
+        "name": "shareSavingsBalance",
+        "type": "string",
+        "description": "The current balance of the member's Share Savings account, as displayed (with currency symbol).",
+        "pattern": "^\\$[0-9]+\\.[0-9]{2}$",
+        "sensitivity": "amount"
+      }
+    ],
+    "checkpointText": "Member Detail",
+    "businessOutcomes": [
+      {
+        "code": "member_not_found",
+        "message": "No member found for the given number",
+        "whenTextMatches": "No matching member|not found",
+        "description": "The searched member number does not exist in the system; the search returns no Member Detail screen."
+      }
+    ]
+  }
+}
