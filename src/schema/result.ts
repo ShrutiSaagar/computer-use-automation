@@ -12,6 +12,10 @@
  *   blocked_by_policy a guardrail refused; not the app's fault and not a bug
  *   failed            something broke; carries enough to debug it
  *
+ * A failed precondition arrives as `failed` with class `precondition_not_met`:
+ * "the conditions to run this are not met" is a failure the caller can act on
+ * differently from a mid-flow crash -- retry-later, not report-a-bug.
+ *
  * Note what is NOT here: "recovered". Dismissing an interstitial or re-authing
  * after a timeout does not change the caller's answer, so it is telemetry on the
  * step, not a result the caller has to branch on.
@@ -59,7 +63,13 @@ export type ResultFlag =
    *  how you notice a fleet moving underneath you. */
   | { kind: 'environment_drift'; field: string; recorded: string; actual: string }
   /** The application is not the version this capability was recorded against. */
-  | { kind: 'product_version_drift'; expected: string; detail: string };
+  | { kind: 'product_version_drift'; expected: string; detail: string }
+  /** A `uses` skill was resolved and loaded for this run. */
+  | { kind: 'skill_loaded'; name: string; capabilityId: string; version: number }
+  /** A declared precondition did not hold and was established before step one
+   *  (e.g. the session was signed on by the auth skill). Telemetry: the caller's
+   *  answer is unchanged, so this is a flag, not a status. */
+  | { kind: 'precondition_established'; name: string; via: string; check: string };
 
 export type ReplayResult = {
   runId: string;
@@ -71,6 +81,14 @@ export type ReplayResult = {
   evidenceDir: string;
   steps: StepTrace[];
   flags: ResultFlag[];
+  /** Audit attribution: who asked for this run, on whose behalf. */
+  invokedBy?: string;
+  /** Caller-supplied idempotency marker, recorded so a retry after a crash can
+   *  be correlated with the run it is retrying. Deduplication is a registry
+   *  concern; this is the hook it keys on. */
+  idempotencyKey?: string;
+  /** The skills resolved and loaded for this run, as name=capabilityId@version. */
+  skills?: string[];
 } & (
   | { status: 'success'; outputs: Record<string, unknown> }
   | { status: 'business_outcome'; outcome: { code: string; message: string; data?: Record<string, string> } }

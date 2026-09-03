@@ -29,5 +29,15 @@ risk:
 allowCoordinateFallback: false
 assistedRecovery: true
 requireStatus: approved
+# Which deployment tiers this deployment may touch. The target is DECLARED on
+# the artifact (surface.deployment), so pointing sandbox traffic at a production
+# institution is a policy refusal before a browser opens -- not a surprise.
+allowedDeployments: [prod]
+
+# Whether capabilities that delegate to other skills (uses/invoke) may run here.
+allowComposition: true
+# How deep a uses chain may nest.
+maxCompositionDepth: 3
+
 maxSteps: 60
 maxRuntimeMs: 300000

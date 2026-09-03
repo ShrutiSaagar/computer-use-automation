@@ -3,8 +3,16 @@
   "type": "object",
   "properties": {
     "schemaVersion": {
-      "type": "string",
-      "const": "1.0"
+      "anyOf": [
+        {
+          "type": "string",
+          "const": "1.0"
+        },
+        {
+          "type": "string",
+          "const": "1.1"
+        }
+      ]
     },
     "id": {
       "type": "string"
@@ -130,6 +138,16 @@
         },
         "entryUrl": {
           "type": "string"
+        },
+        "deployment": {
+          "default": "sandbox",
+          "type": "string",
+          "enum": [
+            "dev",
+            "sandbox",
+            "uat",
+            "prod"
+          ]
         }
       },
       "required": [
@@ -154,6 +172,377 @@
       "required": [
         "credentialRef"
       ]
+    },
+    "uses": {
+      "default": [],
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "capabilityId": {
+            "type": "string"
+          },
+          "version": {
+            "default": "*",
+            "type": "string"
+          },
+          "purpose": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "name",
+          "capabilityId"
+        ]
+      }
+    },
+    "requires": {
+      "type": "object",
+      "properties": {
+        "session": {
+          "type": "object",
+          "properties": {
+            "describe": {
+              "type": "string"
+            },
+            "check": {
+              "$ref": "#/$defs/__schema0"
+            },
+            "establish": {
+              "type": "object",
+              "properties": {
+                "uses": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "uses"
+              ]
+            },
+            "onNotMet": {
+              "default": "establish",
+              "type": "string",
+              "enum": [
+                "establish",
+                "fail",
+                "escalate"
+              ]
+            },
+            "identity": {
+              "type": "object",
+              "properties": {
+                "description": {
+                  "type": "string"
+                },
+                "frame": {
+                  "type": "object",
+                  "properties": {
+                    "name": {
+                      "type": "string"
+                    },
+                    "urlPattern": {
+                      "type": "string"
+                    },
+                    "index": {
+                      "type": "integer",
+                      "minimum": 0,
+                      "maximum": 9007199254740991
+                    }
+                  }
+                },
+                "strategies": {
+                  "minItems": 1,
+                  "type": "array",
+                  "items": {
+                    "oneOf": [
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "role_name"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string"
+                          },
+                          "exact": {
+                            "default": false,
+                            "type": "boolean"
+                          },
+                          "nth": {
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "role",
+                          "name"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "label"
+                          },
+                          "text": {
+                            "type": "string"
+                          },
+                          "exact": {
+                            "default": false,
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "text"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "attr_text"
+                          },
+                          "attr": {
+                            "type": "string",
+                            "enum": [
+                              "placeholder",
+                              "alt",
+                              "title"
+                            ]
+                          },
+                          "text": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "attr",
+                          "text"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "anchor"
+                          },
+                          "anchorText": {
+                            "type": "string"
+                          },
+                          "role": {
+                            "type": "string"
+                          },
+                          "ordinal": {
+                            "default": 0,
+                            "type": "integer",
+                            "minimum": 0,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "anchorText",
+                          "role"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "id_pattern"
+                          },
+                          "regex": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "regex"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "css"
+                          },
+                          "value": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "value"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "text"
+                          },
+                          "value": {
+                            "type": "string"
+                          },
+                          "exact": {
+                            "default": false,
+                            "type": "boolean"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "value"
+                        ]
+                      },
+                      {
+                        "type": "object",
+                        "properties": {
+                          "kind": {
+                            "type": "string",
+                            "const": "coords"
+                          },
+                          "nx": {
+                            "type": "number"
+                          },
+                          "ny": {
+                            "type": "number"
+                          }
+                        },
+                        "required": [
+                          "kind",
+                          "nx",
+                          "ny"
+                        ]
+                      }
+                    ]
+                  }
+                },
+                "recordedRank": {
+                  "default": 0,
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 9007199254740991
+                },
+                "guard": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string"
+                    },
+                    "tag": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "role"
+                  ]
+                }
+              },
+              "required": [
+                "description",
+                "strategies",
+                "guard"
+              ]
+            }
+          },
+          "required": [
+            "check"
+          ]
+        },
+        "data": {
+          "default": [],
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "describe": {
+                "type": "string"
+              },
+              "via": {
+                "type": "string"
+              },
+              "args": {
+                "default": {},
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {
+                  "anyOf": [
+                    {
+                      "type": "string"
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "$param": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "$param"
+                      ]
+                    },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "$secret": {
+                          "type": "string"
+                        }
+                      },
+                      "required": [
+                        "$secret"
+                      ]
+                    }
+                  ]
+                }
+              },
+              "notMetOutcomes": {
+                "default": [],
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "onNotMet": {
+                "default": "propagate",
+                "type": "string",
+                "enum": [
+                  "propagate",
+                  "fail",
+                  "escalate"
+                ]
+              }
+            },
+            "required": [
+              "name",
+              "via"
+            ]
+          }
+        }
+      }
     },
     "inputs": {
       "default": [],
@@ -526,7 +915,8 @@
               "type",
               "select",
               "press",
-              "assert"
+              "assert",
+              "invoke"
             ]
           },
           "target": {
@@ -792,6 +1182,44 @@
           },
           "url": {
             "type": "string"
+          },
+          "uses": {
+            "type": "string"
+          },
+          "args": {
+            "type": "object",
+            "propertyNames": {
+              "type": "string"
+            },
+            "additionalProperties": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "$param": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "$param"
+                  ]
+                },
+                {
+                  "type": "object",
+                  "properties": {
+                    "$secret": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "$secret"
+                  ]
+                }
+              ]
+            }
           },
           "risk": {
             "default": "safe",
@@ -1155,6 +1583,8 @@
                     "ambiguous_locator",
                     "guard_mismatch",
                     "checkpoint_failed",
+                    "precondition_not_met",
+                    "postcondition_failed",
                     "timeout",
                     "navigation_blocked",
                     "unexpected_dialog",
@@ -1517,6 +1947,8 @@
               "ambiguous_locator",
               "guard_mismatch",
               "checkpoint_failed",
+              "precondition_not_met",
+              "postcondition_failed",
               "timeout",
               "navigation_blocked",
               "unexpected_dialog",
@@ -1538,6 +1970,20 @@
     },
     "checkpoint": {
       "$ref": "#/$defs/__schema0"
+    },
+    "post": {
+      "type": "object",
+      "properties": {
+        "describe": {
+          "type": "string"
+        },
+        "condition": {
+          "$ref": "#/$defs/__schema0"
+        }
+      },
+      "required": [
+        "condition"
+      ]
     },
     "provenance": {
       "type": "object",

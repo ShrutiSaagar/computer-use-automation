@@ -55,6 +55,18 @@ export const Policy = z.object({
   }).default({ perStep: 1, perRun: 2 }),
   /** Minimum artifact status for an unattended (non-interactive) invocation. */
   requireStatus: z.enum(['draft', 'verified', 'approved']).default('verified'),
+  /** Which deployment tiers this deployment's policy will touch. A capability
+   *  whose surface.deployment is not listed is refused before a browser opens:
+   *  the target is declared so that pointing sandbox traffic at a production
+   *  institution is a policy refusal, not a surprise. */
+  allowedDeployments: z.array(z.enum(['dev', 'sandbox', 'uat', 'prod']))
+    .default(['dev', 'sandbox', 'uat', 'prod']),
+  /** Whether this deployment permits composed capabilities at all. A production
+   *  deployment that wants to pin exactly what runs may refuse any artifact
+   *  that delegates to other skills. */
+  allowComposition: z.boolean().default(true),
+  /** How deep a `uses` chain may nest. A graph, not a rabbit hole. */
+  maxCompositionDepth: z.number().int().min(1).default(3),
   maxSteps: z.number().int().default(60),
   maxRuntimeMs: z.number().int().default(300_000),
 });
