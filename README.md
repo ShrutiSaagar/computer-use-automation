@@ -21,9 +21,18 @@ with no model in the decision loop, and an AI agent invokes it by name with type
                                          the same session, then resumes)
 ```
 
-Design write-up: **[REPORT.md](REPORT.md)** · Runs and logs: **[evidence/](evidence/)**
+**Reading order.** [OVERVIEW.md](OVERVIEW.md) (3 minutes) → this file (setup, demos, tests, how it
+works) → [REPORT.md](REPORT.md) (design decisions and cuts) → [evidence/](evidence/) (the runs).
 
-## Setup
+## Contents
+
+1. [Setup](#1-setup)
+2. [Run it, in order](#2-run-it-in-order)
+3. [Tests and evidence](#3-tests-and-evidence)
+4. [How it works](#4-how-it-works)
+5. [Repository layout](#5-repository-layout)
+
+## 1. Setup
 
 ```bash
 npm install
@@ -31,76 +40,81 @@ npx playwright install chromium
 cp .env.example .env          # fake operator credentials for the target app
 ```
 
-**Model access.** The learning engine uses the [Claude Agent SDK], which authenticates with
+**Model access is only needed for discovery.** `replay`, `catalog`, `console` and `npm test`
+never call a model. The learning engine uses the [Claude Agent SDK], which authenticates with
 whatever the host already has: a Claude Code subscription works with no key, and
-`ANTHROPIC_API_KEY` works if set. Same code path — a reviewer needs nothing issued to them.
-`replay`, `catalog` and `npm test` never call a model at all.
+`ANTHROPIC_API_KEY` works if set.
 
 [Claude Agent SDK]: https://code.claude.com/docs/en/agent-sdk
 
-## Demo path
+## 2. Run it, in order
+
+Each step builds on the previous one. Every replay writes a directory under `evidence/` with
+`result.json`, `run.jsonl`, `preflight.json`, screenshots and accessibility snapshots.
+
+### 2.1 Start the target application
 
 ```bash
-# 1. the target application: a deliberately hostile legacy back office
 npm run target                                    # tenant A on :4310
-npm run target -- --tenant=b --port=4311          # the same product, rebranded
+```
 
-# 2. DISCOVERY -- a real LLM run against the live UI, compiled into an artifact,
-#    then immediately self-replayed to decide whether it can be trusted
-npm run learn -- \
-  --goal "Sign on to the back office, look up member 100482, and open a new Money Market \
-sub-account for them with a 50 dollar opening deposit, reaching the confirmation screen. \
-Return the new account number, the confirmation code and the effective date." \
-  --target http://localhost:4310/
+`target-app/` is a deliberately hostile stand-in for a real legacy back office (see
+[§4.5](#45-the-target-application)). Leave it running in its own terminal.
 
-# 3. REPLAY -- the production path. No model involved.
-#
-#    The default artifact (v2) is COMPOSED: before the flow runs, the engine
-#    verifies the session requirement and signs on via the `auth.signon` SKILL,
-#    then verifies "the member exists" by delegating to the read-only lookup
-#    skill -- so a MEMBER_NOT_FOUND arrives as the caller's ANSWER before any
-#    irreversible step may run. A preflight.json lands in the evidence dir
-#    recording every check and why it held.
+### 2.2 Replay the happy path (no model)
+
+```bash
 npm run replay -- --capability member.subaccount.open \
   --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00
+```
 
-# 3b. THE CONDITIONS TO RUN, without a browser: resolve the skill graph, check
-#     policy (status, deployment tier, composition), verify every credential
-#     reference across the graph. What a calling agent consults BEFORE committing.
+The artifact is **composed**: before the flow runs, the engine checks the session requirement and
+signs on via the `auth.signon` skill, then verifies "the member exists" by delegating to the
+read-only lookup skill. Only then do the irreversible steps run. Look at the printed step table
+(each step names the locator strategy that won), then open the evidence directory.
+
+### 2.3 Preflight: the conditions to run
+
+```bash
+# every check that needs no browser: skill graph, policy, deployment tier, credentials
 npm run replay -- --capability member.subaccount.open --preflight-only \
   --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00
 
-# 3c. ...and the gate refusing to run when a condition cannot be met. With the
-#     credential references unresolvable, this fails in milliseconds as
-#     precondition_not_met -- no browser ever opens, and preflight.json in the
-#     evidence dir says exactly which check failed.
+# the gate refusing: credentials withheld -> precondition_not_met in milliseconds, no browser opens
 env -u CU_CORE_OPERATOR_USERNAME -u CU_CORE_OPERATOR_PASSWORD \
   npm run replay -- --capability member.subaccount.open \
   --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00
+```
 
-# 4. ...and the paths that are not the happy path
+### 2.4 Business outcomes are answers, not failures
+
+```bash
 npm run replay -- --capability member.subaccount.open --input memberNumber=999999 \
   --input accountType="Money Market" --input openingDeposit=50.00     # MEMBER_NOT_FOUND
 npm run replay -- --capability member.subaccount.open --input memberNumber=100482 \
   --input accountType="Money Market" --input openingDeposit=5.00      # DEPOSIT_BELOW_MINIMUM
 ```
 
-To see a runtime condition handled, arm one in the target app first:
+`MEMBER_NOT_FOUND` arrives from the lookup skill during preflight, before any irreversible step.
+`DEPOSIT_BELOW_MINIMUM` carries the minimum, read out of the application's own message.
+
+### 2.5 Runtime conditions, recovered silently
+
+Arm a fault in the target app, then replay:
 
 ```bash
 curl -sX POST -H 'content-type: application/json' \
   -d '{"mode":"session_timeout"}' localhost:4310/_chaos/arm
 npm run replay -- --capability member.subaccount.open \
   --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00
-#  -> still SUCCESS: re-authenticated mid-flow via the artifact's own establish
-#     path (the auth.signon skill -- no control names hardcoded in the engine)
-#     and restarted. See steps[].recoveries.
+#  -> still SUCCESS. The session expired mid-flow; the engine re-authenticated through the
+#     artifact's own establish path and restarted. See steps[].recoveries in result.json.
 ```
 
 Modes: `not_found`, `validation`, `session_timeout`, `interstitial`, `slow`, `error500`,
 `permission_denied`, `supervisor_override`.
 
-### Human takeover
+### 2.6 Human takeover of the same session
 
 ```bash
 npm run console            # http://localhost:7788
@@ -109,10 +123,10 @@ npm run console            # http://localhost:7788
 Pick `supervisor_override` and press **Start run**. The automation reaches a screen nobody
 recorded, cannot pass its checkpoint, and escalates. The lease flips to `human`, the console
 streams the live page over CDP, and your clicks and keystrokes are forwarded into the *same*
-browser session. Type `OVR-7781`, click **Apply Override**, then **resume** — the engine
+browser session. Type `OVR-7781`, click **Apply Override**, then **resume**. The engine
 re-asserts the step's checkpoint and finishes the flow.
 
-### An agent invoking a capability
+### 2.7 An agent invoking a capability
 
 ```bash
 npm run catalog            # http://localhost:7789 -- tool descriptors + invoke endpoint
@@ -120,54 +134,64 @@ npx tsx src/cli.ts agent-demo --ask "Open a Money Market sub-account for member 
 with a 50 dollar deposit, and check whether member 999999 exists without changing anything."
 ```
 
-### Cross-tenant reuse
+A refused preflight comes back as HTTP 409, and the result names the check that failed.
+
+### 2.8 The same artifact against a second institution
 
 ```bash
+npm run target -- --tenant=b --port=4311          # the same product, rebranded
 npm run replay -- --capability member.subaccount.open@1 \
   --overlay capabilities/member.subaccount.open/northstar-fcu.overlay.json \
   --input memberNumber=100483 --input accountType="Holiday Club" --input openingDeposit=75.00
 ```
 
-Same artifact, different institution. The overlay is the entire difference between them — and it
-can override the session check too, because renaming controls is exactly how one tenant's
-configuration differs from another's. (The Northstar overlay is bound to v1: it rewrites the
-member-search steps that v2 delegates to the lookup skill. Per-skill overlays are future work, so
-preflight *refuses* an overlay pointed at a composed artifact, or at a version its `appliesTo`
-does not name — a half-applied overlay would drive the wrong institution's system.)
+The overlay is the entire difference between the two institutions: seven renamed controls and
+one extra interstitial. It can override the session check too, because renaming controls is
+exactly how one tenant's configuration differs from another's. The Northstar overlay is bound to
+v1; per-skill overlays are future work, so preflight *refuses* an overlay pointed at a composed
+artifact or at a version its `appliesTo` does not name.
 
-### Tests
+### 2.9 Discovery: record a new capability (needs a model)
 
 ```bash
-npm test          # boots the target app itself; no model, no network.
-npm run typecheck
-bash scripts/make-evidence.sh     # regenerates evidence/ end to end
+npm run learn -- \
+  --goal "Sign on to the back office, look up member 100482, and open a new Money Market \
+sub-account for them with a 50 dollar opening deposit, reaching the confirmation screen. \
+Return the new account number, the confirmation code and the effective date." \
+  --target http://localhost:4310/
 ```
 
-## The target application
+Claude drives the live UI, the trace is compiled into an artifact, and the artifact is
+immediately self-replayed to decide whether it can be trusted. The recorded discovery runs that
+produced the shipped artifacts are in `evidence/discovery-*/`.
 
-`target-app/` is a stand-in for the real thing: a server-rendered "CU-Core Back Office" with a
-`<frameset>` shell, nested-table layout, `<font>` tags, ASP.NET-style `ctl00_*` ids, one control
-whose id is regenerated on every render, and no test IDs anywhere.
+## 3. Tests and evidence
 
-Label association is **mixed on purpose**, because real legacy apps are mixed and because it
-forces different rungs of the locator ladder to win on different steps:
+```bash
+npm test                          # 58 tests. Boots the target app itself; no model, no network.
+npm run typecheck
+bash scripts/make-evidence.sh     # regenerates every replay directory under evidence/
+npm run schema -- --out capability.schema.json   # regenerates the exported JSON Schema
+```
 
-| Control | Markup | Winning strategy |
-|---|---|---|
-| Operator ID | `<label for>` | `role_name` (rank 0) |
-| Member No. | no label, adjacent table cell | `anchor` — accessible name is **empty** |
-| Account Type | `<label for>` | `role_name` |
-| Opening Deposit | no label, **rotating id** | `anchor` |
-| Notes | `placeholder` only | `role_name` (the placeholder becomes the name) |
+The e2e tests drive the real target app through the composed path, the business outcomes, each
+recoverable condition, a hard failure, the input contract, and the cross-tenant overlay. A unit
+test asserts that `capability.schema.json` matches the zod schema it is generated from.
 
-`getByRole('textbox', { name: 'Member No.' })` matches **zero** elements on that page. If every
-field had a clean label this project would prove nothing.
+## 4. How it works
 
-Data is obviously synthetic. Credentials come from `.env` and are referenced, never inlined.
+### 4.1 The artifact
 
-## Conditions to run: preflight, skills, and state
+`capabilities/<id>/vN.json` is the unit of everything. It holds typed inputs and outputs, the
+steps, a ranked **locator ladder** per control (accessible role and name first, layout anchors
+and id patterns later, coordinates never by default), a `waitFor` and `checkpoint` per step, the
+capability checkpoint, the error model (signals classified as business outcome, recoverable, or
+hard failure), the recording environment, and the identity of the vendor product it was recorded
+against. The schema is `src/schema/capability.ts`; `capability.schema.json` is its export.
 
-Schema 1.1 adds the block that answers "may this run start at all?" — stated as **requirements**,
+### 4.2 Conditions to run: requirements, not state
+
+Schema 1.1 adds the block that answers "may this run start at all?", stated as **requirements**,
 never as stored state:
 
 ```jsonc
@@ -193,32 +217,32 @@ never as stored state:
 }
 ```
 
-The design stance, in one line: **store the requirement, never the state.** A session cookie *is*
-the credential (persisting it violates the same rule as persisting a password), it is dead in
-minutes, bound to one tenant/user/environment, hostile to audit attribution (replaying it means
-acting as whoever it belonged to), and quietly fatal to determinism. So the artifact carries a
-checkable predicate — in the same `Condition` vocabulary the steps use — plus how to establish it
-and who decides when it cannot be. Defense in depth is explicit: the check is the cheap FIRST
-line; the first step's `waitFor` is the second; the global session-expiry signal (re-auth +
-restart) is the third. Artifacts from schema 1.0 get their check synthesized from their own
-recorded login steps, so old recordings gain the gate unchanged.
-
-At replay, everything is collected into one **preflight report** (`preflight.json` in the evidence
-dir; a delegated skill files its own `preflight-<slot>.json` beside it): skill graph resolution, capability status vs. policy, deployment tier vs. policy
-(`allowedDeployments` — a sandbox-tagged artifact is refused by production policy before a browser
-opens), credential health across the whole graph, the product fingerprint, the session
-requirement, and each data precondition. A gated failure arrives as
-`failed/precondition_not_met` (HTTP 409 from the catalog) — "you cannot run this here, yet" is a
-different answer from "the flow failed at step 7", and callers retry it differently.
+**Store the requirement, never the state.** A session cookie *is* the credential (persisting it
+violates the same rule as persisting a password), it is dead in minutes, bound to one
+tenant/user/environment, hostile to audit attribution, and quietly fatal to determinism. So the
+artifact carries a checkable predicate, in the same `Condition` vocabulary the steps use, plus how
+to establish it and who decides when it cannot be. Artifacts from schema 1.0 get their check
+synthesized from their own recorded login steps, so old recordings gain the gate unchanged.
 
 Sign-on knowledge lives in exactly one artifact (`auth.signon`, a skill with no business logic).
 When the vendor renames a control or adds an MFA prompt, that one artifact changes and every
-capability that composes it is upgraded — with nothing re-recorded. The engine hardcodes no
-control names: the mid-run session-expiry recovery routes through the artifact's own `establish`
-path, and a mid-flow **restart re-runs the ready state** (session + data preconditions), because
-"restart" means "reach the ready state again", not merely "rewind the cursor".
+capability that composes it is upgraded, with nothing re-recorded. The engine hardcodes no
+control names: mid-run session-expiry recovery routes through the artifact's own `establish`
+path, and a restart re-runs the ready state (session and data preconditions), because "restart"
+means "reach the ready state again", not merely "rewind the cursor".
 
-## Reproducibility
+### 4.3 The preflight report
+
+Everything is collected into one report, `preflight.json` in the evidence directory, with a
+`preflight-<slot>.json` per delegated skill beside it: inputs, capability status vs. policy,
+deployment tier vs. `allowedDeployments` (a sandbox-tagged artifact is refused by production
+policy before a browser opens), composition permitted, overlay binding, the resolved skill graph,
+credential health across the whole graph (values unread), the product fingerprint, the session
+requirement, and each data precondition. A gated failure arrives as
+`failed/precondition_not_met`. "You cannot run this here, yet" is a different answer from "the
+flow failed at step 7", and callers retry it differently.
+
+### 4.4 Reproducibility
 
 An artifact stores the conditions it was recorded under and replay re-applies them:
 
@@ -231,13 +255,12 @@ An artifact stores the conditions it was recorded under and replay re-applies th
 }
 ```
 
-The first five are **enforced** — set on the browser context, so a replay matches its recording by
-construction rather than because two constants happened to agree. The last two are **recorded and
-compared**: you cannot honestly force a browser version, so a difference raises an
-`environment_drift` flag instead.
+The first five are **enforced** on the browser context, so a replay matches its recording by
+construction. The last two are **recorded and compared**: you cannot honestly force a browser
+version, so a difference raises an `environment_drift` flag instead.
 
-`signals/cucore.json` also carries a `fingerprint` asserted on arrival — "is this still CU-Core
-8.2?". Try it:
+`signals/cucore.json` also carries a product `fingerprint` asserted on arrival: "is this still
+CU-Core 8.2?". Try it:
 
 ```bash
 npm run target -- --version=8.3      # this institution upgraded ahead of the others
@@ -246,7 +269,29 @@ npm run replay -- --capability member.subaccount.open --input memberNumber=10048
 #  -> still SUCCESS, plus a product_version_drift flag. Notice, don't refuse.
 ```
 
-## Layout
+### 4.5 The target application
+
+`target-app/` is a server-rendered "CU-Core Back Office" with a `<frameset>` shell, nested-table
+layout, `<font>` tags, ASP.NET-style `ctl00_*` ids, one control whose id is regenerated on every
+render, and no test IDs anywhere.
+
+Label association is **mixed on purpose**, because real legacy apps are mixed and because it
+forces different rungs of the locator ladder to win on different steps:
+
+| Control | Markup | Winning strategy |
+|---|---|---|
+| Operator ID | `<label for>` | `role_name` (rank 0) |
+| Member No. | no label, adjacent table cell | `anchor`: accessible name is **empty** |
+| Account Type | `<label for>` | `role_name` |
+| Opening Deposit | no label, **rotating id** | `anchor` |
+| Notes | `placeholder` only | `role_name` (the placeholder becomes the name) |
+
+`getByRole('textbox', { name: 'Member No.' })` matches **zero** elements on that page. If every
+field had a clean label this project would prove nothing.
+
+Data is obviously synthetic. Credentials come from `.env` and are referenced, never inlined.
+
+## 5. Repository layout
 
 ```
 src/schema/       capability.ts   the artifact schema (zod) -- the focal point
@@ -270,8 +315,10 @@ src/policy/       guardrails.ts   one decision function, used by both engines
 src/hitl/         broker.ts       the control lease
                   console/        CDP co-browse operator console
 src/catalog/      server.ts       agent-facing tool descriptors + invoke
+target-app/       the hostile legacy back office, with a chaos endpoint
 signals/          cucore.json     product-level signal pack, merged at load time
-capabilities/     the artifacts, and a tenant overlay
+capabilities/     the artifacts (auth.signon, member.shareSavings.lookup, member.subaccount.open)
+                  and the Northstar tenant overlay
+evidence/         one directory per discovery run and per replay scenario
+policy.dev.yaml   / policy.prod.yaml   the guardrails, per environment
 ```
-
-`capability.schema.json` is generated from the zod definition (`npm run schema`).
