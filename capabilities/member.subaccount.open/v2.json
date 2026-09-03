@@ -1,0 +1,574 @@
+{
+  "schemaVersion": "1.1",
+  "id": "member.subaccount.open",
+  "version": 2,
+  "name": "Open Member Sub-Account",
+  "description": "Signs on to the CU-Core back office, looks up a member by member number, and opens a new sub-account of a given type (e.g. Money Market, Share Savings, Certificate, Holiday Club) funded by an opening deposit from the member's primary Share Savings account, posting the account opening to the core. Returns the new account number, confirmation code, and effective date. Requires a valid, active member number and an opening deposit amount that meets the account type's stated minimum (e.g. $25.00 for Money Market). This action is irreversible once \"Open Account\" is confirmed -- it posts to the core. Composed: signs on via the auth.signon skill, and verifies the member exists -- and lands on their profile -- by delegating to member.shareSavings.lookup before anything irreversible may run. A MEMBER_NOT_FOUND from that check IS the caller's answer, not a failure.",
+  "status": "verified",
+  "product": {
+    "id": "cucore",
+    "vendor": "CU-Core Systems",
+    "version": "8.2"
+  },
+  "surface": {
+    "kind": "legacy_web",
+    "entryUrl": "http://localhost:4310/",
+    "deployment": "sandbox"
+  },
+  "auth": {
+    "credentialRef": "env:CU_CORE_OPERATOR",
+    "loginStepIds": []
+  },
+  "uses": [
+    {
+      "name": "signon",
+      "capabilityId": "auth.signon",
+      "version": "*",
+      "purpose": "establish the operator session"
+    },
+    {
+      "name": "lookup",
+      "capabilityId": "member.shareSavings.lookup",
+      "version": "*",
+      "purpose": "verify the member exists and land on their profile before any irreversible step may run"
+    }
+  ],
+  "requires": {
+    "session": {
+      "describe": "an authenticated operator session (the sign-on screen is gone)",
+      "check": {
+        "node_absent": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      },
+      "establish": {
+        "uses": "signon"
+      },
+      "onNotMet": "establish"
+    },
+    "data": [
+      {
+        "name": "member_exists",
+        "describe": "the member exists and their profile can be opened; the check is a read-only lookup",
+        "via": "lookup",
+        "args": {
+          "memberNumber": {
+            "$param": "memberNumber"
+          }
+        },
+        "notMetOutcomes": [
+          "MEMBER_NOT_FOUND"
+        ],
+        "onNotMet": "propagate"
+      }
+    ]
+  },
+  "inputs": [
+    {
+      "name": "memberNumber",
+      "type": "string",
+      "description": "The member number to look up and open the sub-account for.",
+      "required": true,
+      "pattern": "^[0-9]{6}$",
+      "sensitivity": "identifier",
+      "example": "100482"
+    },
+    {
+      "name": "accountType",
+      "type": "string",
+      "description": "The type of sub-account to open.",
+      "required": true,
+      "enum": [
+        "Share Savings",
+        "Money Market",
+        "Certificate",
+        "Holiday Club"
+      ],
+      "sensitivity": "none",
+      "example": "Money Market"
+    },
+    {
+      "name": "openingDeposit",
+      "type": "number",
+      "description": "The opening deposit amount for the new sub-account, must meet the account type's minimum (e.g. $25.00 for Money Market).",
+      "required": true,
+      "pattern": "^[0-9]+\\.[0-9]{2}$",
+      "sensitivity": "amount",
+      "example": "50.00"
+    }
+  ],
+  "outputs": [
+    {
+      "name": "newAccountNumber",
+      "type": "string",
+      "description": "The account number assigned to the newly opened sub-account.",
+      "from": {
+        "description": "The newly created sub-account number for the Money Market account.",
+        "frame": {
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "New Account Number",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(1) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.0894
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^[0-9]{4}-[0-9]{6}$",
+      "sensitivity": "account_number"
+    },
+    {
+      "name": "confirmationCode",
+      "type": "string",
+      "description": "The confirmation code issued for the sub-account opening transaction.",
+      "from": {
+        "description": "The confirmation code issued for the sub-account opening transaction.",
+        "frame": {
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Confirmation",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(2) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.1131
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^[A-Z0-9-]+$",
+      "sensitivity": "identifier"
+    },
+    {
+      "name": "effectiveDate",
+      "type": "string",
+      "description": "The effective date the new sub-account was opened, in YYYY-MM-DD format.",
+      "from": {
+        "description": "The effective date on which the new sub-account was opened.",
+        "frame": {
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Effective Date",
+            "role": "cell",
+            "ordinal": 0
+          },
+          {
+            "kind": "css",
+            "value": "table > tbody > tr:nth-of-type(3) > td:nth-of-type(2)"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1772,
+            "ny": 0.1369
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "cell",
+          "tag": "td"
+        }
+      },
+      "extract": "text",
+      "pattern": "^\\d{4}-\\d{2}-\\d{2}$",
+      "sensitivity": "none"
+    }
+  ],
+  "steps": [
+    {
+      "id": "s7_new_sub_account",
+      "intent": "Click New Sub-Account to start the sub-account creation form.",
+      "action": "click",
+      "target": {
+        "description": "the \"New Sub-Account\" button in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "New Sub-Account",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "New Sub-Account",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "2016-07-02",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnNewSub$"
+          },
+          {
+            "kind": "css",
+            "value": "tr > td > form > input#ctl00_ContentPlaceHolder1_btnNewSub"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0649,
+            "ny": 0.2794
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "New Sub-Account",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "New Sub-Account"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Account Type"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s8_account_type",
+      "intent": "Select the desired account type in the Account Type dropdown.",
+      "action": "select",
+      "target": {
+        "description": "the \"Account Type\" combobox in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "combobox",
+            "name": "Account Type",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Account Type",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Account Type",
+            "role": "combobox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "ddlType$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(1) > td:nth-of-type(2) > select#ctl00_ContentPlaceHolder1_ddlType"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1488,
+            "ny": 0.0919
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "combobox",
+          "name": "Account Type",
+          "tag": "select"
+        }
+      },
+      "value": {
+        "$param": "accountType"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "combobox",
+          "name": "Account Type"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s9_opening_deposit",
+      "intent": "Type the opening deposit amount into the Opening Deposit field.",
+      "action": "type",
+      "target": {
+        "description": "the textbox next to \"Opening Deposit\" in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "anchor",
+            "anchorText": "Opening Deposit",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtDeposit$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input#ctl00_dynu2v6gu_txtDeposit"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1452,
+            "ny": 0.1206
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$param": "openingDeposit"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "text_present": "Opening Deposit"
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s10_continue",
+      "intent": "Click Continue to move to the review screen.",
+      "action": "click",
+      "target": {
+        "description": "the \"Continue\" button in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Continue",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Continue",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Optional notes",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnContinue$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(5) > td > input#ctl00_ContentPlaceHolder1_btnContinue"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0464,
+            "ny": 0.2081
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Continue",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Continue"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Member"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s11_open_account",
+      "intent": "Click Open Account to post the account opening to the core, reaching the confirmation screen.",
+      "action": "click",
+      "target": {
+        "description": "the \"Open Account\" button in the mainFrame",
+        "frame": {
+          "name": "mainFrame",
+          "index": 2
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Open Account",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Open Account",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "(none)",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnConfirm$"
+          },
+          {
+            "kind": "css",
+            "value": "tr > td > form > input#ctl00_ContentPlaceHolder1_btnConfirm"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0555,
+            "ny": 0.2206
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Open Account",
+          "tag": "input"
+        }
+      },
+      "risk": "irreversible",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Open Account"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "New Account Number"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    }
+  ],
+  "signals": [],
+  "checkpoint": {
+    "all": [
+      {
+        "text_present": "Sub-Account Opened"
+      },
+      {
+        "value_matches": {
+          "target": {
+            "description": "The newly created sub-account number for the Money Market account.",
+            "frame": {
+              "index": 2
+            },
+            "strategies": [
+              {
+                "kind": "anchor",
+                "anchorText": "New Account Number",
+                "role": "cell",
+                "ordinal": 0
+              },
+              {
+                "kind": "css",
+                "value": "table > tbody > tr:nth-of-type(1) > td:nth-of-type(2)"
+              },
+              {
+                "kind": "coords",
+                "nx": 0.1772,
+                "ny": 0.0894
+              }
+            ],
+            "recordedRank": 0,
+            "guard": {
+              "role": "cell",
+              "tag": "td"
+            }
+          },
+          "pattern": "^[0-9]{4}-[0-9]{6}$"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "discoveryRunId": "composed-from-discovery-subaccount-open",
+    "model": "none -- v2 recomposes the v1 recording onto auth.signon and member.shareSavings.lookup; the flow steps, locators, risk classifications, outputs and checkpoint are carried over verbatim",
+    "recordedAt": "2026-09-01T02:27:04Z",
+    "evidenceDir": "evidence/discovery-subaccount-open"
+  },
+  "stats": {
+    "replays": 0,
+    "successes": 0,
+    "lastVerifiedAt": "2026-09-01T02:27:04Z"
+  }
+}

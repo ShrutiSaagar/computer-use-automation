@@ -1,0 +1,256 @@
+{
+  "schemaVersion": "1.1",
+  "id": "auth.signon",
+  "version": 1,
+  "name": "Sign on to the back office",
+  "description": "Signs the service operator on to the CU-Core back office and lands on the Member Search screen. This is a SKILL: it contains no business logic and is not meant to be invoked by an agent directly -- it is the establishment path other capabilities reference in requires.session. Sign-on knowledge lives HERE and nowhere else: when the vendor renames a control or adds an MFA prompt, this one artifact changes and every capability that composes it is upgraded, with nothing re-recorded. Credentials come from a reference (env:CU_CORE_OPERATOR); the password never enters any transcript, artifact, or screenshot.",
+  "status": "verified",
+  "product": {
+    "id": "cucore",
+    "vendor": "CU-Core Systems",
+    "version": "8.2"
+  },
+  "surface": {
+    "kind": "legacy_web",
+    "entryUrl": "http://localhost:4310/",
+    "deployment": "sandbox"
+  },
+  "auth": {
+    "credentialRef": "env:CU_CORE_OPERATOR",
+    "loginStepIds": []
+  },
+  "uses": [],
+  "requires": {
+    "session": {
+      "describe": "the operator sign-on screen itself -- this skill IS the establishment path, so its own precondition is that the login form is showing (it is only ever invoked by a parent whose session check has already failed)",
+      "check": {
+        "node_visible": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      },
+      "onNotMet": "fail"
+    }
+  },
+  "inputs": [],
+  "outputs": [],
+  "steps": [
+    {
+      "id": "s1_operator_id",
+      "intent": "Type the operator username into the Operator ID field.",
+      "action": "type",
+      "target": {
+        "description": "the \"Operator ID\" textbox",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Operator ID",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Operator ID",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtUser$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(1) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtUser"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.0869
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Operator ID",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.username"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "textbox",
+          "name": "Operator ID"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s2_password",
+      "intent": "Type the operator password into the Password field.",
+      "action": "type",
+      "target": {
+        "description": "the \"Password\" textbox",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "textbox",
+            "name": "Password",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Password",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "textbox",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "txtPwd$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(2) > td:nth-of-type(2) > input#ctl00_ContentPlaceHolder1_txtPwd"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.1375,
+            "ny": 0.1156
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "textbox",
+          "name": "Password",
+          "tag": "input"
+        }
+      },
+      "value": {
+        "$secret": "env:CU_CORE_OPERATOR.password"
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "textbox",
+          "name": "Password"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    },
+    {
+      "id": "s3_sign_on",
+      "intent": "Click Sign On to authenticate.",
+      "action": "click",
+      "target": {
+        "description": "the \"Sign On\" button",
+        "frame": {
+          "index": 0
+        },
+        "strategies": [
+          {
+            "kind": "role_name",
+            "role": "button",
+            "name": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "label",
+            "text": "Sign On",
+            "exact": true
+          },
+          {
+            "kind": "anchor",
+            "anchorText": "Password",
+            "role": "button",
+            "ordinal": 0
+          },
+          {
+            "kind": "id_pattern",
+            "regex": "btnSignOn$"
+          },
+          {
+            "kind": "css",
+            "value": "tbody > tr:nth-of-type(3) > td > input#ctl00_ContentPlaceHolder1_btnSignOn"
+          },
+          {
+            "kind": "coords",
+            "nx": 0.0352,
+            "ny": 0.1456
+          }
+        ],
+        "recordedRank": 0,
+        "guard": {
+          "role": "button",
+          "name": "Sign On",
+          "tag": "input"
+        }
+      },
+      "risk": "safe",
+      "waitFor": {
+        "node_visible": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      },
+      "checkpoint": {
+        "node_visible": {
+          "role": "cell",
+          "name": "Servicing"
+        }
+      },
+      "timeoutMs": 10000,
+      "retries": 1,
+      "onError": []
+    }
+  ],
+  "signals": [],
+  "checkpoint": {
+    "all": [
+      {
+        "node_visible": {
+          "role": "link",
+          "name": "Member Search"
+        }
+      },
+      {
+        "node_absent": {
+          "role": "button",
+          "name": "Sign On"
+        }
+      }
+    ]
+  },
+  "provenance": {
+    "discoveryRunId": "composed-from-discovery-subaccount-open",
+    "model": "none -- refactored from the login steps of member.subaccount.open@1 (locators carried over verbatim)",
+    "recordedAt": "2026-09-01T02:26:44Z",
+    "evidenceDir": "evidence/discovery-subaccount-open"
+  },
+  "stats": {
+    "replays": 0,
+    "successes": 0,
+    "lastVerifiedAt": "2026-09-01T02:26:44Z"
+  }
+}
