@@ -1,0 +1,2 @@
+{"ts":"2026-09-03T03:19:30.452Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@2","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"],"depth":0,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:19:30.452Z","seq":1,"type":"preflight_not_ready","check":"credential_refs","detail":"member.subaccount.open: env:CU_CORE_OPERATOR not resolvable from the environment; auth.signon@1: env:CU_CORE_OPERATOR not resolvable from the environment; member.shareSavings.lookup@2: env:CU_CORE_OPERATOR not resolvable from the environment"}

@@ -1,23 +1,16 @@
 {
   "runId": "replay-interstitial-recovered",
   "capabilityId": "member.subaccount.open",
-  "capabilityVersion": 1,
-  "startedAt": "2026-08-30T03:17:14.941Z",
-  "durationMs": 6182,
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:18:⟪amount:openingDeposit⟫6Z",
+  "durationMs": 10540,
   "evidenceDir": "evidence/replay-interstitial-recovered",
   "steps": [
     {
-      "stepId": "s1_navigate",
-      "action": "navigate",
-      "status": "ok",
-      "ms": 21,
-      "recoveries": []
-    },
-    {
-      "stepId": "s2_operator_id",
+      "stepId": "signon:s1_operator_id",
       "action": "type",
       "status": "ok",
-      "ms": 15,
+      "ms": 18,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -26,10 +19,10 @@
       }
     },
     {
-      "stepId": "s3_password",
+      "stepId": "signon:s2_password",
       "action": "type",
       "status": "ok",
-      "ms": 40,
+      "ms": 34,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -38,10 +31,10 @@
       }
     },
     {
-      "stepId": "s4_sign_on",
+      "stepId": "signon:s3_sign_on",
       "action": "click",
       "status": "recovered",
-      "ms": 5152,
+      "ms": 5167,
       "recoveries": [
         {
           "signalId": "system_notice",
@@ -63,10 +56,10 @@
       }
     },
     {
-      "stepId": "s5_member_no",
+      "stepId": "lookup:s5_member_no",
       "action": "type",
       "status": "ok",
-      "ms": 16,
+      "ms": 20,
       "recoveries": [],
       "strategy": {
         "kind": "anchor",
@@ -75,10 +68,10 @@
       }
     },
     {
-      "stepId": "s6_search",
+      "stepId": "lookup:s6_search",
       "action": "click",
       "status": "ok",
-      "ms": 209,
+      "ms": 230,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -90,7 +83,7 @@
       "stepId": "s7_new_sub_account",
       "action": "click",
       "status": "ok",
-      "ms": 210,
+      "ms": 231,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -102,7 +95,7 @@
       "stepId": "s8_account_type",
       "action": "select",
       "status": "ok",
-      "ms": 25,
+      "ms": 17,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -114,7 +107,7 @@
       "stepId": "s9_opening_deposit",
       "action": "type",
       "status": "ok",
-      "ms": 26,
+      "ms": 19,
       "recoveries": [],
       "strategy": {
         "kind": "anchor",
@@ -126,7 +119,7 @@
       "stepId": "s10_continue",
       "action": "click",
       "status": "ok",
-      "ms": 214,
+      "ms": 212,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -138,7 +131,7 @@
       "stepId": "s11_open_account",
       "action": "click",
       "status": "ok",
-      "ms": 189,
+      "ms": 208,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -149,15 +142,38 @@
   ],
   "flags": [
     {
+      "kind": "skill_loaded",
+      "name": "signon",
+      "capabilityId": "auth.signon",
+      "version": 1
+    },
+    {
+      "kind": "precondition_established",
+      "name": "session",
+      "via": "skill \"signon\"",
+      "check": "no button named \"Sign On\" is visible"
+    },
+    {
+      "kind": "skill_loaded",
+      "name": "lookup",
+      "capabilityId": "member.shareSavings.lookup",
+      "version": 2
+    },
+    {
       "kind": "risky_action_allowed",
       "stepId": "s11_open_account",
       "risk": "irreversible"
     }
   ],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
   "status": "success",
   "outputs": {
-    "newAccountNumber": "0005-⟪identifier:memberNumber⟫",
+    "newAccountNumber": "0014-⟪identifier:memberNumber⟫",
     "confirmationCode": "SA-⟪identifier:memberNumber⟫-MONE",
-    "effectiveDate": "2026-08-30"
+    "effectiveDate": "2026-09-03"
   }
 }

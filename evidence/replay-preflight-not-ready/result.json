@@ -1,0 +1,23 @@
+{
+  "runId": "replay-preflight-not-ready",
+  "capabilityId": "member.subaccount.open",
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:19:30.452Z",
+  "durationMs": 1,
+  "evidenceDir": "evidence/replay-preflight-not-ready",
+  "steps": [],
+  "flags": [],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
+  "status": "failed",
+  "error": {
+    "class": "precondition_not_met",
+    "stepId": "(preflight credential_refs)",
+    "message": "the conditions to run member.subaccount.open@2 are not met: credential_refs",
+    "expected": "credential_refs",
+    "observed": "member.subaccount.open: env:CU_CORE_OPERATOR not resolvable from the environment; auth.signon@1: env:CU_CORE_OPERATOR not resolvable from the environment; member.shareSavings.lookup@2: env:CU_CORE_OPERATOR not resolvable from the environment"
+  }
+}

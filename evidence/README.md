@@ -32,19 +32,29 @@ locale, timezone, browser build — which replay re-applies. See REPORT.md §3.
 
 ## Replay — the production path, no model in the loop
 
+Every replay directory also contains **`preflight.json`** (and a `preflight-<slot>.json` per
+delegated skill) — the conditions-to-run report: the
+resolved skill graph, policy checks (status, deployment tier, composition), credential health, the
+product fingerprint, and the session and data preconditions with why each held. For the composed
+v2 capability it shows `signon=auth.signon@1` and `lookup=member.shareSavings.lookup@2` resolved
+before the browser opened, and the session requirement **established** by the auth skill because
+the sign-on screen was still up at arrival.
+
 | Directory | Result | Point |
 |---|---|---|
-| [`replay-success/`](replay-success/) | `success` | Typed outputs. Note `strategy.rank` per step: two steps resolve by caption anchor because those fields have no accessible name. |
-| [`replay-member-not-found/`](replay-member-not-found/) | `business_outcome` | `MEMBER_NOT_FOUND` with `searchedFor` captured. **An answer, not a crash.** |
+| [`replay-success/`](replay-success/) | `success` | Typed outputs, through the COMPOSED path: preflight signed on via the `auth.signon` skill and verified `member_exists` via the read-only lookup skill before any irreversible step ran. `result.json` pins the resolved skills; child steps appear in the trace as `signon:…` / `lookup:…`. |
+| [`replay-member-not-found/`](replay-member-not-found/) | `business_outcome` | `MEMBER_NOT_FOUND` with `searchedFor` captured — and now it arrives via the **data precondition**: the lookup check's honest answer propagated as the caller's answer before the flow even started. **An answer, not a crash.** |
 | [`replay-deposit-below-minimum/`](replay-deposit-below-minimum/) | `business_outcome` | `DEPOSIT_BELOW_MINIMUM`, with the minimum captured out of the app's own message. |
-| [`replay-session-timeout-recovered/`](replay-session-timeout-recovered/) | `success` | Session expired mid-flow → re-authenticated from the credential *reference* → restarted the flow → completed. The caller never learns it happened; it is in `steps[].recoveries`. |
+| [`replay-session-timeout-recovered/`](replay-session-timeout-recovered/) | `success` | Session expired mid-flow → re-authenticated from the credential *reference* via the artifact's own `establish` path (no control names in the engine) → the ready state re-established → flow restarted → completed. The caller never learns it happened; it is in `steps[].recoveries`. |
 | [`replay-interstitial-recovered/`](replay-interstitial-recovered/) | `success` | An unexpected maintenance notice, dismissed without repeating the step. |
-| [`replay-app-error/`](replay-app-error/) | `failed` | `surface_error`, with the exception text in `observed`. |
+| [`replay-app-error/`](replay-app-error/) | `failed` | `surface_error` *propagated from inside the lookup skill* with the exception text in `observed` — a child's hard failure keeps its class; it is not laundered into "precondition not met". |
 | [`replay-unrecorded-screen-no-operator/`](replay-unrecorded-screen-no-operator/) | `failed` | A screen the recording has never seen and no signal matches. Fails cleanly with expected-vs-observed rather than hanging, because no operator is attached. |
 | [`replay-invalid-input/`](replay-invalid-input/) | `failed` | `invalid_input`, refused in ~1ms — the caller's contract is checked before a browser is opened. |
+| [`replay-preflight-not-ready/`](replay-preflight-not-ready/) | `failed` / `precondition_not_met` | The credential references are unresolvable, so the static preflight refuses **before any browser opens**, and `preflight.json` says exactly which check failed. |
+| [`replay-preflight-only/`](replay-preflight-only/) | verdict on paper | The `--preflight-only` path: every check that does not need the application, in milliseconds. What a calling agent should consult before committing to a run. |
 | [`replay-escalation-handoff/`](replay-escalation-handoff/) | `success` | **The same unrecorded screen, with an operator attached.** See below. |
 | [`replay-tenant-northstar/`](replay-tenant-northstar/) | `success` | The *same artifact* against a different institution, via a ~100-line overlay. |
-| [`replay-balance-lookup/`](replay-balance-lookup/) | `success` | The read-only capability. |
+| [`replay-balance-lookup/`](replay-balance-lookup/) | `success` | The read-only capability, v2: signs on by delegating to `auth.signon`. |
 
 ## The human handoff
 

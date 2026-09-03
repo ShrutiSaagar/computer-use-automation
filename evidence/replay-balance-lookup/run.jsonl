@@ -1,8 +1,14 @@
-{"ts":"2026-08-30T03:17:39.176Z","seq":0,"type":"replay_start","capability":"member.shareSavings.lookup@1","status":"verified","policy":"dev","inputs":["memberNumber"]}
-{"ts":"2026-08-30T03:17:39.219Z","seq":1,"type":"acted","stepId":"s1_navigate","action":"navigate"}
-{"ts":"2026-08-30T03:17:39.243Z","seq":2,"type":"acted","stepId":"s2_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
-{"ts":"2026-08-30T03:17:39.277Z","seq":3,"type":"acted","stepId":"s3_password","action":"type","control":"Password","value":"⟪secret⟫"}
-{"ts":"2026-08-30T03:17:39.337Z","seq":4,"type":"acted","stepId":"s4_sign_on","action":"click","control":"Sign On"}
-{"ts":"2026-08-30T03:17:39.380Z","seq":5,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
-{"ts":"2026-08-30T03:17:39.426Z","seq":6,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
-{"ts":"2026-08-30T03:17:39.638Z","seq":7,"type":"replay_success","outputs":["shareSavingsAccountNumber","shareSavingsBalance"],"meanStrategyRank":0}
+{"ts":"2026-09-03T03:19:32.017Z","seq":0,"type":"replay_start","capability":"member.shareSavings.lookup@2","status":"verified","policy":"dev","inputs":["memberNumber"],"depth":0,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:19:36.213Z","seq":1,"type":"precondition_not_met","requirement":"session","phase":"initial","mode":"establish","check":"no button named \"Sign On\" is visible"}
+{"ts":"2026-09-03T03:19:36.214Z","seq":2,"type":"skill_start","skill":"signon","capability":"auth.signon@1","reason":"establish session (initial)"}
+{"ts":"2026-09-03T03:19:36.214Z","seq":3,"type":"replay_start","capability":"auth.signon@1","status":"verified","policy":"dev","inputs":[],"scope":"signon","depth":1,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:19:36.257Z","seq":4,"type":"session_verified","phase":"initial","check":"a button named \"Sign On\" is visible"}
+{"ts":"2026-09-03T03:19:36.275Z","seq":5,"type":"acted","stepId":"s1_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
+{"ts":"2026-09-03T03:19:36.319Z","seq":6,"type":"acted","stepId":"s2_password","action":"type","control":"Password","value":"⟪secret⟫"}
+{"ts":"2026-09-03T03:19:36.392Z","seq":7,"type":"acted","stepId":"s3_sign_on","action":"click","control":"Sign On"}
+{"ts":"2026-09-03T03:19:36.475Z","seq":8,"type":"replay_success","outputs":[],"meanStrategyRank":0}
+{"ts":"2026-09-03T03:19:36.476Z","seq":9,"type":"skill_done","skill":"signon","capability":"auth.signon@1","status":"success"}
+{"ts":"2026-09-03T03:19:36.485Z","seq":10,"type":"session_verified","phase":"initial","check":"no button named \"Sign On\" is visible","established":"skill \"signon\""}
+{"ts":"2026-09-03T03:19:36.497Z","seq":11,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
+{"ts":"2026-09-03T03:19:36.555Z","seq":12,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
+{"ts":"2026-09-03T03:19:36.763Z","seq":13,"type":"replay_success","outputs":["shareSavingsAccountNumber","shareSavingsBalance"],"meanStrategyRank":0}

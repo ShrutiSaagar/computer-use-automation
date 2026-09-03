@@ -1,23 +1,16 @@
 {
   "runId": "replay-unrecorded-screen-no-operator",
   "capabilityId": "member.subaccount.open",
-  "capabilityVersion": 1,
-  "startedAt": "2026-08-30T03:17:23.483Z",
-  "durationMs": 10948,
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:19:07.200Z",
+  "durationMs": 15292,
   "evidenceDir": "evidence/replay-unrecorded-screen-no-operator",
   "steps": [
     {
-      "stepId": "s1_navigate",
-      "action": "navigate",
-      "status": "ok",
-      "ms": 22,
-      "recoveries": []
-    },
-    {
-      "stepId": "s2_operator_id",
+      "stepId": "signon:s1_operator_id",
       "action": "type",
       "status": "ok",
-      "ms": 14,
+      "ms": 20,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -26,10 +19,10 @@
       }
     },
     {
-      "stepId": "s3_password",
+      "stepId": "signon:s2_password",
       "action": "type",
       "status": "ok",
-      "ms": 43,
+      "ms": 49,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -38,10 +31,10 @@
       }
     },
     {
-      "stepId": "s4_sign_on",
+      "stepId": "signon:s3_sign_on",
       "action": "click",
       "status": "ok",
-      "ms": 96,
+      "ms": 102,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -50,10 +43,10 @@
       }
     },
     {
-      "stepId": "s5_member_no",
+      "stepId": "lookup:s5_member_no",
       "action": "type",
       "status": "ok",
-      "ms": 12,
+      "ms": 10,
       "recoveries": [],
       "strategy": {
         "kind": "anchor",
@@ -62,10 +55,10 @@
       }
     },
     {
-      "stepId": "s6_search",
+      "stepId": "lookup:s6_search",
       "action": "click",
       "status": "ok",
-      "ms": 233,
+      "ms": 219,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -77,7 +70,7 @@
       "stepId": "s7_new_sub_account",
       "action": "click",
       "status": "ok",
-      "ms": 210,
+      "ms": 233,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -89,7 +82,7 @@
       "stepId": "s8_account_type",
       "action": "select",
       "status": "ok",
-      "ms": 13,
+      "ms": 28,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -101,7 +94,7 @@
       "stepId": "s9_opening_deposit",
       "action": "type",
       "status": "ok",
-      "ms": 15,
+      "ms": 28,
       "recoveries": [],
       "strategy": {
         "kind": "anchor",
@@ -113,7 +106,7 @@
       "stepId": "s10_continue",
       "action": "click",
       "status": "failed",
-      "ms": 10232,
+      "ms": 10252,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -122,7 +115,31 @@
       }
     }
   ],
-  "flags": [],
+  "flags": [
+    {
+      "kind": "skill_loaded",
+      "name": "signon",
+      "capabilityId": "auth.signon",
+      "version": 1
+    },
+    {
+      "kind": "precondition_established",
+      "name": "session",
+      "via": "skill \"signon\"",
+      "check": "no button named \"Sign On\" is visible"
+    },
+    {
+      "kind": "skill_loaded",
+      "name": "lookup",
+      "capabilityId": "member.shareSavings.lookup",
+      "version": 2
+    }
+  ],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
   "status": "failed",
   "error": {
     "class": "checkpoint_failed",

@@ -60,9 +60,23 @@ clr; npx tsx src/cli.ts replay --capability $CAP --label invalid-input \
   --input memberNumber=abc --input accountType="Money Market" --input openingDeposit=50.00 || true
 
 step "cross-tenant: the same artifact against a rebranded institution"
-clr; npx tsx src/cli.ts replay --capability $CAP --label tenant-northstar \
+# The Northstar overlay is bound to v1 (it rewrites the member-search steps that
+# v2 delegates to the lookup skill -- per-skill overlays are future work), so the
+# cross-tenant demo replays the v1 artifact explicitly.
+clr; npx tsx src/cli.ts replay --capability $CAP@1 --label tenant-northstar \
   --overlay capabilities/$CAP/northstar-fcu.overlay.json \
   --input memberNumber=100483 --input accountType="Holiday Club" --input openingDeposit=75.00 || true
+
+step "preflight gate: refusing to run when the conditions are not met"
+# Credentials withheld: the static preflight must refuse in milliseconds, before
+# any browser opens, and leave preflight.json behind to explain itself.
+clr; env -u CU_CORE_OPERATOR_USERNAME -u CU_CORE_OPERATOR_PASSWORD \
+  npx tsx src/cli.ts replay --capability $CAP --label preflight-not-ready \
+  --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00 || true
+
+step "preflight only: the conditions-to-run check, without any browser"
+clr; npx tsx src/cli.ts replay --capability $CAP --label preflight-only --preflight-only \
+  --input memberNumber=100482 --input accountType="Money Market" --input openingDeposit=50.00 || true
 
 step "read-only capability"
 clr; npx tsx src/cli.ts replay --capability member.shareSavings.lookup --label balance-lookup \

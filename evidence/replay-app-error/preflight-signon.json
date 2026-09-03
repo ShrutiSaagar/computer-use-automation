@@ -1,0 +1,88 @@
+{
+  "capability": "auth.signon@1",
+  "deployment": "sandbox",
+  "verdict": "ready",
+  "checks": [
+    {
+      "name": "inputs",
+      "ok": true,
+      "gate": true,
+      "detail": "0 input(s) accepted"
+    },
+    {
+      "name": "capability_status",
+      "ok": true,
+      "gate": true,
+      "detail": "\"verified\" vs policy \"dev\" requiring \"draft\""
+    },
+    {
+      "name": "deployment",
+      "ok": true,
+      "gate": true,
+      "detail": "\"sandbox\" is allowed by policy \"dev\""
+    },
+    {
+      "name": "skill_graph",
+      "ok": true,
+      "gate": true,
+      "detail": "signon=auth.signon@1, lookup=member.shareSavings.lookup@2"
+    },
+    {
+      "name": "composition_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "capability composes nothing"
+    },
+    {
+      "name": "credential_refs",
+      "ok": true,
+      "gate": true,
+      "detail": "all references resolvable (values unread)"
+    },
+    {
+      "name": "risky_steps",
+      "ok": true,
+      "gate": false,
+      "detail": "none declared"
+    },
+    {
+      "name": "session_requirement",
+      "ok": true,
+      "gate": false,
+      "detail": "declared: the operator sign-on screen itself -- this skill IS the establishment path, so its own precondition is that the login form is showing (it is only ever invoked by a parent whose session check has already failed); on not met: fail via no establishment path"
+    },
+    {
+      "name": "data_requirements",
+      "ok": true,
+      "gate": false,
+      "detail": "none declared"
+    },
+    {
+      "name": "entry_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "http://localhost:4310/"
+    },
+    {
+      "name": "product_fingerprint",
+      "ok": true,
+      "gate": false,
+      "detail": "page matches /CU-Core Back Office 8\\.2/"
+    },
+    {
+      "name": "session",
+      "ok": true,
+      "gate": true,
+      "detail": "a button named \"Sign On\" is visible"
+    }
+  ],
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
+  "skillProblems": [],
+  "invocation": {
+    "invokedBy": "cli",
+    "phase": "ready"
+  }
+}

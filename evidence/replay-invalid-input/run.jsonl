@@ -1,2 +1,2 @@
-{"ts":"2026-08-30T03:17:35.836Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@1","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"]}
-{"ts":"2026-08-30T03:17:35.837Z","seq":1,"type":"invalid_input","message":"input \"memberNumber\" must match /^[0-9]{6}$/, got \"abc\""}
+{"ts":"2026-09-03T03:19:23.436Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@2","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"],"depth":0,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:19:23.436Z","seq":1,"type":"invalid_input","message":"input \"memberNumber\" must match /^[0-9]{6}$/, got \"abc\""}

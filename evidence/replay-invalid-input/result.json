@@ -1,12 +1,17 @@
 {
   "runId": "replay-invalid-input",
   "capabilityId": "member.subaccount.open",
-  "capabilityVersion": 1,
-  "startedAt": "2026-08-30T03:17:35.836Z",
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:19:23.435Z",
   "durationMs": 1,
   "evidenceDir": "evidence/replay-invalid-input",
   "steps": [],
   "flags": [],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
   "status": "failed",
   "error": {
     "class": "invalid_input",

@@ -1,0 +1,70 @@
+{
+  "capability": "member.subaccount.open@2",
+  "deployment": "sandbox",
+  "verdict": "not_ready",
+  "checks": [
+    {
+      "name": "inputs",
+      "ok": true,
+      "gate": true,
+      "detail": "3 input(s) accepted"
+    },
+    {
+      "name": "capability_status",
+      "ok": true,
+      "gate": true,
+      "detail": "\"verified\" vs policy \"dev\" requiring \"draft\""
+    },
+    {
+      "name": "deployment",
+      "ok": true,
+      "gate": true,
+      "detail": "\"sandbox\" is allowed by policy \"dev\""
+    },
+    {
+      "name": "skill_graph",
+      "ok": true,
+      "gate": true,
+      "detail": "signon=auth.signon@1, lookup=member.shareSavings.lookup@2"
+    },
+    {
+      "name": "composition_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "2 skill slot(s) permitted"
+    },
+    {
+      "name": "credential_refs",
+      "ok": false,
+      "gate": true,
+      "detail": "member.subaccount.open: env:CU_CORE_OPERATOR not resolvable from the environment; auth.signon@1: env:CU_CORE_OPERATOR not resolvable from the environment; member.shareSavings.lookup@2: env:CU_CORE_OPERATOR not resolvable from the environment"
+    },
+    {
+      "name": "risky_steps",
+      "ok": true,
+      "gate": false,
+      "detail": "s11_open_account (irreversible -> policy allow)"
+    },
+    {
+      "name": "session_requirement",
+      "ok": true,
+      "gate": false,
+      "detail": "declared: an authenticated operator session (the sign-on screen is gone); on not met: establish via skill \"signon\""
+    },
+    {
+      "name": "data_requirements",
+      "ok": true,
+      "gate": false,
+      "detail": "member_exists via \"lookup\" (on not met: propagate)"
+    }
+  ],
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
+  "skillProblems": [],
+  "invocation": {
+    "invokedBy": "cli",
+    "phase": "static"
+  }
+}

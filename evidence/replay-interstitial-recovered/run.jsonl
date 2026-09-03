@@ -1,20 +1,31 @@
-{"ts":"2026-08-30T03:17:14.941Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@1","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"]}
-{"ts":"2026-08-30T03:17:14.982Z","seq":1,"type":"acted","stepId":"s1_navigate","action":"navigate"}
-{"ts":"2026-08-30T03:17:15.007Z","seq":2,"type":"acted","stepId":"s2_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
-{"ts":"2026-08-30T03:17:15.047Z","seq":3,"type":"acted","stepId":"s3_password","action":"type","control":"Password","value":"⟪secret⟫"}
-{"ts":"2026-08-30T03:17:15.106Z","seq":4,"type":"acted","stepId":"s4_sign_on","action":"click","control":"Sign On"}
-{"ts":"2026-08-30T03:17:15.143Z","seq":5,"type":"signal_matched","signal":"system_notice","classify":"recoverable","phase":"post","stepId":"s4_sign_on"}
-{"ts":"2026-08-30T03:17:15.143Z","seq":6,"type":"recovery_start","signal":"system_notice","action":"click","attempt":1}
-{"ts":"2026-08-30T03:17:15.173Z","seq":7,"type":"recovery_done","signal":"system_notice","action":"click","then":"continue"}
-{"ts":"2026-08-30T03:17:15.177Z","seq":8,"type":"signal_matched","signal":"system_notice","classify":"recoverable","phase":"post","stepId":"s4_sign_on"}
-{"ts":"2026-08-30T03:17:15.177Z","seq":9,"type":"recovery_start","signal":"system_notice","action":"click","attempt":2}
-{"ts":"2026-08-30T03:17:20.185Z","seq":10,"type":"recovery_done","signal":"system_notice","action":"click","then":"continue"}
-{"ts":"2026-08-30T03:17:20.213Z","seq":11,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
-{"ts":"2026-08-30T03:17:20.255Z","seq":12,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
-{"ts":"2026-08-30T03:17:20.462Z","seq":13,"type":"acted","stepId":"s7_new_sub_account","action":"click","control":"New Sub-Account"}
-{"ts":"2026-08-30T03:17:20.647Z","seq":14,"type":"acted","stepId":"s8_account_type","action":"select","control":"Account Type"}
-{"ts":"2026-08-30T03:17:20.676Z","seq":15,"type":"acted","stepId":"s9_opening_deposit","action":"type","control":""}
-{"ts":"2026-08-30T03:17:20.733Z","seq":16,"type":"acted","stepId":"s10_continue","action":"click","control":"Continue"}
-{"ts":"2026-08-30T03:17:20.907Z","seq":17,"type":"risky_action","stepId":"s11_open_account","risk":"irreversible","control":"Open Account","response":"allow"}
-{"ts":"2026-08-30T03:17:20.920Z","seq":18,"type":"acted","stepId":"s11_open_account","action":"click","control":"Open Account"}
-{"ts":"2026-08-30T03:17:21.123Z","seq":19,"type":"replay_success","outputs":["newAccountNumber","confirmationCode","effectiveDate"],"meanStrategyRank":0}
+{"ts":"2026-09-03T03:18:50.006Z","seq":0,"type":"replay_start","capability":"member.subaccount.open@2","status":"verified","policy":"dev","inputs":["memberNumber","accountType","openingDeposit"],"depth":0,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:18:54.182Z","seq":1,"type":"precondition_not_met","requirement":"session","phase":"initial","mode":"establish","check":"no button named \"Sign On\" is visible"}
+{"ts":"2026-09-03T03:18:54.182Z","seq":2,"type":"skill_start","skill":"signon","capability":"auth.signon@1","reason":"establish session (initial)"}
+{"ts":"2026-09-03T03:18:54.182Z","seq":3,"type":"replay_start","capability":"auth.signon@1","status":"verified","policy":"dev","inputs":[],"scope":"signon","depth":1,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:18:54.215Z","seq":4,"type":"session_verified","phase":"initial","check":"a button named \"Sign On\" is visible"}
+{"ts":"2026-09-03T03:18:54.230Z","seq":5,"type":"acted","stepId":"s1_operator_id","action":"type","control":"Operator ID","value":"⟪secret⟫"}
+{"ts":"2026-09-03T03:18:54.265Z","seq":6,"type":"acted","stepId":"s2_password","action":"type","control":"Password","value":"⟪secret⟫"}
+{"ts":"2026-09-03T03:18:54.322Z","seq":7,"type":"acted","stepId":"s3_sign_on","action":"click","control":"Sign On"}
+{"ts":"2026-09-03T03:18:54.358Z","seq":8,"type":"signal_matched","signal":"system_notice","classify":"recoverable","phase":"post","stepId":"s3_sign_on"}
+{"ts":"2026-09-03T03:18:54.358Z","seq":9,"type":"recovery_start","signal":"system_notice","action":"click","attempt":1}
+{"ts":"2026-09-03T03:18:54.408Z","seq":10,"type":"recovery_done","signal":"system_notice","action":"click","then":"continue"}
+{"ts":"2026-09-03T03:18:54.412Z","seq":11,"type":"signal_matched","signal":"system_notice","classify":"recoverable","phase":"post","stepId":"s3_sign_on"}
+{"ts":"2026-09-03T03:18:54.412Z","seq":12,"type":"recovery_start","signal":"system_notice","action":"click","attempt":2}
+{"ts":"2026-09-03T03:18:59.417Z","seq":13,"type":"recovery_done","signal":"system_notice","action":"click","then":"continue"}
+{"ts":"2026-09-03T03:18:59.482Z","seq":14,"type":"replay_success","outputs":[],"meanStrategyRank":0}
+{"ts":"2026-09-03T03:18:59.483Z","seq":15,"type":"skill_done","skill":"signon","capability":"auth.signon@1","status":"success"}
+{"ts":"2026-09-03T03:18:59.490Z","seq":16,"type":"session_verified","phase":"initial","check":"no button named \"Sign On\" is visible","established":"skill \"signon\""}
+{"ts":"2026-09-03T03:18:59.490Z","seq":17,"type":"skill_start","skill":"lookup","capability":"member.shareSavings.lookup@2","reason":"verify member_exists (initial)"}
+{"ts":"2026-09-03T03:18:59.490Z","seq":18,"type":"replay_start","capability":"member.shareSavings.lookup@2","status":"verified","policy":"dev","inputs":["memberNumber"],"scope":"lookup","depth":1,"invokedBy":"cli"}
+{"ts":"2026-09-03T03:18:59.548Z","seq":19,"type":"session_verified","phase":"initial","check":"no button named \"Sign On\" is visible"}
+{"ts":"2026-09-03T03:18:59.563Z","seq":20,"type":"acted","stepId":"s5_member_no","action":"type","control":""}
+{"ts":"2026-09-03T03:18:59.622Z","seq":21,"type":"acted","stepId":"s6_search","action":"click","control":"Search"}
+{"ts":"2026-09-03T03:18:59.832Z","seq":22,"type":"replay_success","outputs":["shareSavingsAccountNumber","shareSavingsBalance"],"meanStrategyRank":0}
+{"ts":"2026-09-03T03:18:59.833Z","seq":23,"type":"skill_done","skill":"lookup","capability":"member.shareSavings.lookup@2","status":"success"}
+{"ts":"2026-09-03T03:18:59.886Z","seq":24,"type":"acted","stepId":"s7_new_sub_account","action":"click","control":"New Sub-Account"}
+{"ts":"2026-09-03T03:19:00.074Z","seq":25,"type":"acted","stepId":"s8_account_type","action":"select","control":"Account Type"}
+{"ts":"2026-09-03T03:19:00.095Z","seq":26,"type":"acted","stepId":"s9_opening_deposit","action":"type","control":""}
+{"ts":"2026-09-03T03:19:00.136Z","seq":27,"type":"acted","stepId":"s10_continue","action":"click","control":"Continue"}
+{"ts":"2026-09-03T03:19:00.319Z","seq":28,"type":"risky_action","stepId":"s11_open_account","risk":"irreversible","control":"Open Account","response":"allow"}
+{"ts":"2026-09-03T03:19:00.345Z","seq":29,"type":"acted","stepId":"s11_open_account","action":"click","control":"Open Account"}
+{"ts":"2026-09-03T03:19:00.546Z","seq":30,"type":"replay_success","outputs":["newAccountNumber","confirmationCode","effectiveDate"],"meanStrategyRank":0}

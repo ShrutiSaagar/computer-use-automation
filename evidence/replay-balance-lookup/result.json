@@ -1,23 +1,16 @@
 {
   "runId": "replay-balance-lookup",
   "capabilityId": "member.shareSavings.lookup",
-  "capabilityVersion": 1,
-  "startedAt": "2026-08-30T03:17:39.176Z",
-  "durationMs": 463,
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:19:32.017Z",
+  "durationMs": 4746,
   "evidenceDir": "evidence/replay-balance-lookup",
   "steps": [
     {
-      "stepId": "s1_navigate",
-      "action": "navigate",
-      "status": "ok",
-      "ms": 20,
-      "recoveries": []
-    },
-    {
-      "stepId": "s2_operator_id",
+      "stepId": "signon:s1_operator_id",
       "action": "type",
       "status": "ok",
-      "ms": 14,
+      "ms": 21,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -26,10 +19,10 @@
       }
     },
     {
-      "stepId": "s3_password",
+      "stepId": "signon:s2_password",
       "action": "type",
       "status": "ok",
-      "ms": 35,
+      "ms": 43,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -38,10 +31,10 @@
       }
     },
     {
-      "stepId": "s4_sign_on",
+      "stepId": "signon:s3_sign_on",
       "action": "click",
       "status": "ok",
-      "ms": 93,
+      "ms": 115,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -53,7 +46,7 @@
       "stepId": "s5_member_no",
       "action": "type",
       "status": "ok",
-      "ms": 11,
+      "ms": 17,
       "recoveries": [],
       "strategy": {
         "kind": "anchor",
@@ -65,7 +58,7 @@
       "stepId": "s6_search",
       "action": "click",
       "status": "ok",
-      "ms": 219,
+      "ms": 222,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -74,7 +67,24 @@
       }
     }
   ],
-  "flags": [],
+  "flags": [
+    {
+      "kind": "skill_loaded",
+      "name": "signon",
+      "capabilityId": "auth.signon",
+      "version": 1
+    },
+    {
+      "kind": "precondition_established",
+      "name": "session",
+      "via": "skill \"signon\"",
+      "check": "no button named \"Sign On\" is visible"
+    }
+  ],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1"
+  ],
   "status": "success",
   "outputs": {
     "shareSavingsAccountNumber": "0001-⟪identifier:memberNumber⟫",

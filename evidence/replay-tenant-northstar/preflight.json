@@ -1,0 +1,92 @@
+{
+  "capability": "member.subaccount.open@1",
+  "tenantId": "northstar-fcu",
+  "deployment": "sandbox",
+  "verdict": "ready",
+  "checks": [
+    {
+      "name": "inputs",
+      "ok": true,
+      "gate": true,
+      "detail": "3 input(s) accepted"
+    },
+    {
+      "name": "capability_status",
+      "ok": true,
+      "gate": true,
+      "detail": "\"verified\" vs policy \"dev\" requiring \"draft\""
+    },
+    {
+      "name": "deployment",
+      "ok": true,
+      "gate": true,
+      "detail": "\"sandbox\" is allowed by policy \"dev\""
+    },
+    {
+      "name": "skill_graph",
+      "ok": true,
+      "gate": true,
+      "detail": "no skills required"
+    },
+    {
+      "name": "composition_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "capability composes nothing"
+    },
+    {
+      "name": "overlay",
+      "ok": true,
+      "gate": true,
+      "detail": "\"northstar-fcu\" bound to member.subaccount.open@1"
+    },
+    {
+      "name": "credential_refs",
+      "ok": true,
+      "gate": true,
+      "detail": "all references resolvable (values unread)"
+    },
+    {
+      "name": "risky_steps",
+      "ok": true,
+      "gate": false,
+      "detail": "s11_open_account (irreversible -> policy allow)"
+    },
+    {
+      "name": "session_requirement",
+      "ok": true,
+      "gate": false,
+      "detail": "synthesized for a 1.0 artifact: derived from the \"s4_sign_on\" login step's target (button \"Sign On\"); establishment: inline login steps [s2_operator_id, s3_password, s4_sign_on]"
+    },
+    {
+      "name": "data_requirements",
+      "ok": true,
+      "gate": false,
+      "detail": "none declared"
+    },
+    {
+      "name": "entry_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "http://localhost:4311/"
+    },
+    {
+      "name": "product_fingerprint",
+      "ok": true,
+      "gate": false,
+      "detail": "page matches /CU-Core Back Office 8\\.2/"
+    },
+    {
+      "name": "session",
+      "ok": true,
+      "gate": true,
+      "detail": "no button named \"Sign On\" is visible -- established inline login steps"
+    }
+  ],
+  "skills": [],
+  "skillProblems": [],
+  "invocation": {
+    "invokedBy": "cli",
+    "phase": "ready"
+  }
+}

@@ -1,23 +1,16 @@
 {
   "runId": "replay-success",
   "capabilityId": "member.subaccount.open",
-  "capabilityVersion": 1,
-  "startedAt": "2026-08-30T03:17:06.754Z",
-  "durationMs": 1145,
+  "capabilityVersion": 2,
+  "startedAt": "2026-09-03T03:18:25.241Z",
+  "durationMs": 5503,
   "evidenceDir": "evidence/replay-success",
   "steps": [
     {
-      "stepId": "s1_navigate",
-      "action": "navigate",
-      "status": "ok",
-      "ms": 23,
-      "recoveries": []
-    },
-    {
-      "stepId": "s2_operator_id",
+      "stepId": "signon:s1_operator_id",
       "action": "type",
       "status": "ok",
-      "ms": 24,
+      "ms": 25,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -26,10 +19,10 @@
       }
     },
     {
-      "stepId": "s3_password",
+      "stepId": "signon:s2_password",
       "action": "type",
       "status": "ok",
-      "ms": 38,
+      "ms": 42,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -38,10 +31,10 @@
       }
     },
     {
-      "stepId": "s4_sign_on",
+      "stepId": "signon:s3_sign_on",
       "action": "click",
       "status": "ok",
-      "ms": 119,
+      "ms": 103,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -50,55 +43,7 @@
       }
     },
     {
-      "stepId": "s5_member_no",
-      "action": "type",
-      "status": "ok",
-      "ms": 10,
-      "recoveries": [],
-      "strategy": {
-        "kind": "anchor",
-        "rank": 0,
-        "drift": false
-      }
-    },
-    {
-      "stepId": "s6_search",
-      "action": "click",
-      "status": "ok",
-      "ms": 216,
-      "recoveries": [],
-      "strategy": {
-        "kind": "role_name",
-        "rank": 0,
-        "drift": false
-      }
-    },
-    {
-      "stepId": "s7_new_sub_account",
-      "action": "click",
-      "status": "ok",
-      "ms": 180,
-      "recoveries": [],
-      "strategy": {
-        "kind": "role_name",
-        "rank": 0,
-        "drift": false
-      }
-    },
-    {
-      "stepId": "s8_account_type",
-      "action": "select",
-      "status": "ok",
-      "ms": 14,
-      "recoveries": [],
-      "strategy": {
-        "kind": "role_name",
-        "rank": 0,
-        "drift": false
-      }
-    },
-    {
-      "stepId": "s9_opening_deposit",
+      "stepId": "lookup:s5_member_no",
       "action": "type",
       "status": "ok",
       "ms": 9,
@@ -110,10 +55,58 @@
       }
     },
     {
+      "stepId": "lookup:s6_search",
+      "action": "click",
+      "status": "ok",
+      "ms": 223,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s7_new_sub_account",
+      "action": "click",
+      "status": "ok",
+      "ms": 225,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s8_account_type",
+      "action": "select",
+      "status": "ok",
+      "ms": 20,
+      "recoveries": [],
+      "strategy": {
+        "kind": "role_name",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
+      "stepId": "s9_opening_deposit",
+      "action": "type",
+      "status": "ok",
+      "ms": 27,
+      "recoveries": [],
+      "strategy": {
+        "kind": "anchor",
+        "rank": 0,
+        "drift": false
+      }
+    },
+    {
       "stepId": "s10_continue",
       "action": "click",
       "status": "ok",
-      "ms": 208,
+      "ms": 221,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -125,7 +118,7 @@
       "stepId": "s11_open_account",
       "action": "click",
       "status": "ok",
-      "ms": 186,
+      "ms": 188,
       "recoveries": [],
       "strategy": {
         "kind": "role_name",
@@ -136,15 +129,38 @@
   ],
   "flags": [
     {
+      "kind": "skill_loaded",
+      "name": "signon",
+      "capabilityId": "auth.signon",
+      "version": 1
+    },
+    {
+      "kind": "precondition_established",
+      "name": "session",
+      "via": "skill \"signon\"",
+      "check": "no button named \"Sign On\" is visible"
+    },
+    {
+      "kind": "skill_loaded",
+      "name": "lookup",
+      "capabilityId": "member.shareSavings.lookup",
+      "version": 2
+    },
+    {
       "kind": "risky_action_allowed",
       "stepId": "s11_open_account",
       "risk": "irreversible"
     }
   ],
+  "invokedBy": "cli",
+  "skills": [
+    "signon=auth.signon@1",
+    "lookup=member.shareSavings.lookup@2"
+  ],
   "status": "success",
   "outputs": {
-    "newAccountNumber": "0003-⟪identifier:memberNumber⟫",
+    "newAccountNumber": "0012-⟪identifier:memberNumber⟫",
     "confirmationCode": "SA-⟪identifier:memberNumber⟫-MONE",
-    "effectiveDate": "2026-08-30"
+    "effectiveDate": "2026-09-03"
   }
 }

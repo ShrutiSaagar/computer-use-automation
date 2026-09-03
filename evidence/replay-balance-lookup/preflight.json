@@ -1,0 +1,87 @@
+{
+  "capability": "member.shareSavings.lookup@2",
+  "deployment": "sandbox",
+  "verdict": "ready",
+  "checks": [
+    {
+      "name": "inputs",
+      "ok": true,
+      "gate": true,
+      "detail": "1 input(s) accepted"
+    },
+    {
+      "name": "capability_status",
+      "ok": true,
+      "gate": true,
+      "detail": "\"verified\" vs policy \"dev\" requiring \"draft\""
+    },
+    {
+      "name": "deployment",
+      "ok": true,
+      "gate": true,
+      "detail": "\"sandbox\" is allowed by policy \"dev\""
+    },
+    {
+      "name": "skill_graph",
+      "ok": true,
+      "gate": true,
+      "detail": "signon=auth.signon@1"
+    },
+    {
+      "name": "composition_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "1 skill slot(s) permitted"
+    },
+    {
+      "name": "credential_refs",
+      "ok": true,
+      "gate": true,
+      "detail": "all references resolvable (values unread)"
+    },
+    {
+      "name": "risky_steps",
+      "ok": true,
+      "gate": false,
+      "detail": "none declared"
+    },
+    {
+      "name": "session_requirement",
+      "ok": true,
+      "gate": false,
+      "detail": "declared: an authenticated operator session (the sign-on screen is gone); on not met: establish via skill \"signon\""
+    },
+    {
+      "name": "data_requirements",
+      "ok": true,
+      "gate": false,
+      "detail": "none declared"
+    },
+    {
+      "name": "entry_allowed",
+      "ok": true,
+      "gate": true,
+      "detail": "http://localhost:4310/"
+    },
+    {
+      "name": "product_fingerprint",
+      "ok": true,
+      "gate": false,
+      "detail": "page matches /CU-Core Back Office 8\\.2/"
+    },
+    {
+      "name": "session",
+      "ok": true,
+      "gate": true,
+      "detail": "no button named \"Sign On\" is visible -- established skill \"signon\""
+    }
+  ],
+  "skills": [
+    "signon=auth.signon@1"
+  ],
+  "skillProblems": [],
+  "invocation": {
+    "invokedBy": "cli",
+    "phase": "ready"
+  }
+}
