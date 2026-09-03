@@ -86,6 +86,44 @@ safety posture; baking "always proceed" in would make the artifact unsafe by con
 **Identity is the vendor product, not the tenant** — `product: { id: "cucore", version: "8.2" }`.
 That is what lets one recording serve many institutions (Section 4).
 
+**The conditions to run are declared (`requires`), not stored (schema 1.1).** A session requirement
+is a checkable predicate — "the sign-on control is absent" — plus how to establish it (delegate to
+the `auth.signon` skill) and who decides when that fails (`establish | fail | escalate`). The
+state itself is never stored: a session cookie is a credential (persisting it violates the same
+rule as persisting a password), it is dead in minutes, bound to one tenant, hostile to audit
+attribution (replaying it means *acting as* whoever it belonged to), and quietly fatal to
+determinism. 1.0 artifacts get the check synthesized from their own recorded login steps, so the
+gate is retroactive without touching them. The engine hardcodes no control names: mid-run session
+expiry routes through the artifact's own establish path, and the synthesized check (derived from
+the login click's target) replaced two product-specific names that used to live in `engine.ts`.
+
+**Composition is a static, version-ranged graph (`uses` + `invoke` steps).** The model chose the
+composition at record time or a human authored it; replay only executes it, so determinism is
+unaffected. Cycles and depth are rejected when the graph loads — before a browser opens — and the
+resolved versions are pinned into the run's evidence. Sign-on now lives in exactly one artifact
+(`auth.signon`); the login steps that were duplicated across both recordings are gone from both.
+The propagation rule is explicit because the brief's "most common design mistake" reappears one
+level up: a child's legitimate business outcome (`MEMBER_NOT_FOUND` from the lookup) *is* the
+parent's answer, propagated via `requires.data[].notMetOutcomes`; a child's hard failure is the
+parent's hard failure, with its error class intact — an app crash during a precondition check
+arrives as `surface_error`, never laundered into "precondition not met".
+
+**A preflight gate produces one report** (`preflight.json` in every run's evidence, plus a
+`preflight-<slot>.json` per delegated skill): inputs,
+capability status vs. policy, deployment tier vs. `allowedDeployments`, composition permitted,
+the skill graph, credential health across the whole graph (values unread), the product
+fingerprint, and each session/data requirement. A gated failure returns
+`failed/precondition_not_met` — fail-fast is not merely cheaper; "you cannot run this here, yet"
+is a different *answer* from "the flow failed at step 7", and callers write different retry logic
+for each. The deployment tag (`surface.deployment`) exists because nothing else stops sandbox
+traffic from being pointed at a production institution, and at a bank that is the worst available
+failure.
+
+**A `post` block is read-back verification.** The checkpoint proves what the final screen *says*;
+the post-condition proves the world agrees, after outputs are extracted. A capability that hands
+a banking agent a success it cannot verify is worse than one that fails loudly — so the failure
+class is `postcondition_failed`, never a silently wrong success.
+
 **Outputs are declarative, not steps.** "Steps act, outputs read", so what a capability *returns*
 is legible from the contract without reading the step list. Output locators are built in a
 different mode: for an action target the accessible name identifies the control, but for an output
@@ -316,6 +354,20 @@ proven to work once, on one tenant, with one set of inputs.
   promotion, or rollback tooling.
 - *`approved` state* — modelled and enforced by policy, but nothing sets it: there is no review UI.
 - *Frame-level scroll and drag in the console* — click and type are forwarded; scroll is not.
+- *Per-skill tenant overlays* — an overlay rewrites the steps of the artifact it is bound to; the
+  steps of the skills it composes are not overlaid yet, which is why the cross-tenant demo replays
+  v1 (the Northstar overlay rewrites the member-search steps that v2 delegates to the lookup
+  skill). Until that exists, preflight refuses an overlay on a composed artifact (and one whose
+  `appliesTo` names a different version) rather than half-apply it. The schema already has the
+  shape for it (`TenantOverlay` keyed per skill) — it is resolution plumbing, not design.
+- *Mid-flow `invoke` steps* — the shipped artifacts delegate only from `requires` (before step one),
+  where the child's entry navigation is harmless. An `invoke` step at step 7 would run the child
+  from its own entry URL and hand the parent back a different screen; a child that resumes from
+  the parent's current screen needs an "entry: in place" mode on the skill.
+- *Idempotency registry* — a run records `invokedBy` and a caller-supplied `idempotencyKey` for
+  audit and retry correlation; deduplication ("this exact key already opened account X") needs the
+  run registry that scaling infrastructure would bring. The `post` read-back is the
+  stopgap: never report a success the world does not confirm.
 
 **What I would build next, in order.**
 
