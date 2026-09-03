@@ -31,6 +31,16 @@ import type { Evidence } from '../evidence/logger.js';
 import type { SessionBroker } from '../hitl/broker.js';
 import { resolveLocator } from './locator.js';
 import { describeCondition, evaluateCondition, matchSignals, signalsForStep, waitForCondition } from './detect.js';
+import { validateInputs, resolveValueExpr, type InputCheck } from './contract.js';
+import { loadSkills, synthesizeSessionCheck, type LoadedSkill } from './skills.js';
+import {
+  buildStaticPreflight, addCheck, firstGateFailure, finalizeVerdict, type PreflightReport,
+} from './preflight.js';
+
+// Re-exported for the callers that imported these from the engine before the
+// contract moved to its own module.
+export { validateInputs };
+export type { InputCheck };
 
 export type ReplayDeps = {
   surface: Surface;
@@ -41,6 +51,18 @@ export type ReplayDeps = {
    *  hanging forever waiting for an operator who is not there. */
   broker?: SessionBroker;
   overlay?: TenantOverlay;
+  /** The resolved `uses` graph (loaded before the browser opens). Absent means
+   *  load it from the artifact store here. */
+  skills?: Map<string, LoadedSkill>;
+  skillProblems?: string[];
+  skillOrder?: string[];
+  /** Audit attribution. */
+  invokedBy?: string;
+  idempotencyKey?: string;
+  /** Composition depth: 0 for a top-level run, +1 per delegated skill. */
+  depth?: number;
+  /** Evidence scope label for a delegated skill's events. */
+  scope?: string;
 };
 
 // ---------------------------------------------------------------- overlay
@@ -89,19 +111,42 @@ export function applyOverlay(cap: Capability, overlay: TenantOverlay): { cap: Ca
       value: patch.value ?? s.value,
       waitFor: patch.waitFor ?? s.waitFor,
       checkpoint: patch.checkpoint ?? s.checkpoint,
-      ...(patch.skip ? { action: 'assert' as const, target: undefined } : {}),
+      // A skipped step no longer exists for this tenant, so neither do its conditions.
+      ...(patch.skip ? { action: 'assert' as const, target: undefined, waitFor: undefined, checkpoint: undefined } : {}),
     };
   });
+  // Renaming controls is the most common per-tenant difference, and the
+  // session check asserts on control names -- so the tenant can override it
+  // like anything else (and impose one on an artifact that has none yet).
+  const requires = overlay.session?.check
+    ? {
+        ...cap.requires,
+        session: {
+          ...(cap.requires?.session ?? {}),
+          check: overlay.session.check,
+          onNotMet: cap.requires?.session?.onNotMet ?? ('establish' as const),
+        },
+        data: cap.requires?.data ?? [],
+      }
+    : cap.requires;
   return {
     cap: {
       ...cap,
-      surface: { ...cap.surface, entryUrl: overlay.entryUrl ?? cap.surface.entryUrl },
+      surface: {
+        ...cap.surface,
+        entryUrl: overlay.entryUrl ?? cap.surface.entryUrl,
+        ...(overlay.deployment ? { deployment: overlay.deployment } : {}),
+      },
       steps,
       checkpoint: rebase(cap.checkpoint),
       outputs: rebase(cap.outputs),
       // Overlay signals are prepended so a tenant-specific rule wins a tie
       // against the product default.
       signals: [...overlay.addSignals, ...rebase(cap.signals)],
+      ...(requires ? { requires: rebase(requires) } : {}),
+      ...(overlay.post?.condition
+        ? { post: { describe: cap.post?.describe, condition: overlay.post.condition } }
+        : cap.post ? { post: rebase(cap.post) } : {}),
     },
     touched,
   };
@@ -109,42 +154,9 @@ export function applyOverlay(cap: Capability, overlay: TenantOverlay): { cap: Ca
 
 // ---------------------------------------------------------------- contract
 
-export type InputCheck = { ok: true; values: Record<string, string> } | { ok: false; message: string };
-
-export function validateInputs(cap: Capability, given: Record<string, unknown>): InputCheck {
-  const values: Record<string, string> = {};
-  for (const p of cap.inputs) {
-    const raw = given[p.name] ?? p.default;
-    if (raw === undefined || raw === '') {
-      if (p.required) return { ok: false, message: `missing required input "${p.name}" (${p.description})` };
-      continue;
-    }
-    const v = String(raw);
-    if (p.type === 'number' && !Number.isFinite(Number(v))) {
-      return { ok: false, message: `input "${p.name}" must be a number, got "${v}"` };
-    }
-    if (p.pattern && !new RegExp(p.pattern).test(v)) {
-      return { ok: false, message: `input "${p.name}" must match /${p.pattern}/, got "${v}"` };
-    }
-    if (p.enum && !p.enum.includes(v)) {
-      return { ok: false, message: `input "${p.name}" must be one of [${p.enum.join(', ')}], got "${v}"` };
-    }
-    values[p.name] = v;
-  }
-  const unknown = Object.keys(given).filter((k) => !cap.inputs.some((p) => p.name === k));
-  if (unknown.length) return { ok: false, message: `unknown input(s): ${unknown.join(', ')}` };
-  return { ok: true, values };
-}
-
+/** Resolve a value expression against the run's inputs, secrets via the redactor. */
 function resolveValue(expr: ValueExpr | undefined, values: Record<string, string>, redactor: Redactor): string {
-  if (expr === undefined) return '';
-  if (typeof expr === 'string') return expr;
-  if ('$param' in expr) {
-    const v = values[expr.$param];
-    if (v === undefined) throw new Error(`step references unknown parameter "${expr.$param}"`);
-    return v;
-  }
-  return resolveSecretExpr(expr.$secret, redactor);
+  return resolveValueExpr(expr, values, (ref) => resolveSecretExpr(ref, redactor));
 }
 
 // ---------------------------------------------------------------- engine
@@ -167,6 +179,15 @@ export async function replay(
   const steps: StepTrace[] = [];
   const flags: ResultFlag[] = [];
   let repairsUsed = 0;
+  const depth = deps.depth ?? 0;
+  const scopeLabel = deps.scope;
+
+  // The skill graph is resolved before this point by the wiring (run.ts), so a
+  // missing dependency never costs a browser launch. A direct caller gets the
+  // load-from-store behaviour instead.
+  const graph = deps.skills
+    ? { skills: deps.skills, order: deps.skillOrder ?? [...deps.skills].map(([n, s]) => `${n}=${s.source}`), problems: deps.skillProblems ?? [] }
+    : loadSkills(cap, { maxDepth: policy.maxCompositionDepth });
 
   let active = cap;
   if (deps.overlay) {
@@ -176,8 +197,9 @@ export async function replay(
     evidence.event('overlay_applied', { tenantId: deps.overlay.tenantId, steps: merged.touched });
   }
 
-  const done = (extra: Partial<ReplayResult>): ReplayResult =>
-    ({
+  const done = (extra: Partial<ReplayResult>): ReplayResult => {
+    persistReport(report.invocation.phase);
+    return {
       runId,
       capabilityId: active.id,
       capabilityVersion: active.version,
@@ -187,8 +209,34 @@ export async function replay(
       evidenceDir: evidence.dir,
       steps,
       flags,
+      ...(deps.invokedBy ? { invokedBy: deps.invokedBy } : {}),
+      ...(deps.idempotencyKey ? { idempotencyKey: deps.idempotencyKey } : {}),
+      ...(graph.order.length ? { skills: graph.order } : {}),
       ...extra,
-    }) as ReplayResult;
+    } as ReplayResult;
+  };
+
+  /**
+   * The preflight report. Static checks are computed now; the runtime checks
+   * (fingerprint, session, data) fill in on arrival, and the report is
+   * rewritten as it evolves so even a refused run explains itself on disk.
+   */
+  const report: PreflightReport = buildStaticPreflight({
+    cap: active,
+    policy,
+    inputs: rawInputs,
+    graph,
+    overlay: deps.overlay,
+    invokedBy: deps.invokedBy,
+    idempotencyKey: deps.idempotencyKey,
+  });
+  // A delegated skill's report is its own file, so a child never overwrites
+  // the parent's. Every result passes through done(), which re-persists the
+  // FINAL state of the checks (a failed mid-run re-auth is recorded, not lost).
+  const reportFile = scopeLabel ? `preflight-${scopeLabel.replace(/[^\w.-]+/g, '_')}.json` : 'preflight.json';
+  const persistReport = (phase: string) => {
+    evidence.file(reportFile, JSON.stringify(redactor.redactValue(finalizeVerdict(report, phase)), null, 2));
+  };
 
   const fromHalt = (h: Halt): ReplayResult => {
     switch (h.kind) {
@@ -215,6 +263,9 @@ export async function replay(
   evidence.event('replay_start', {
     capability: `${active.id}@${active.version}`, status: active.status,
     policy: policy.name, inputs: Object.keys(rawInputs),
+    scope: scopeLabel, depth,
+    invokedBy: deps.invokedBy,
+    ...(deps.idempotencyKey ? { idempotencyKey: deps.idempotencyKey } : {}),
   });
 
   // ---- contract gates, before we touch the application at all
@@ -222,6 +273,7 @@ export async function replay(
   const checked = validateInputs(active, rawInputs);
   if (!checked.ok) {
     evidence.event('invalid_input', { message: checked.message });
+    persistReport('static');
     return done({
       status: 'failed',
       error: {
@@ -238,7 +290,28 @@ export async function replay(
   if (rank[active.status] < rank[policy.requireStatus]) {
     const detail = `capability status is "${active.status}" but policy "${policy.name}" requires "${policy.requireStatus}" for unattended replay`;
     evidence.event('blocked_by_policy', { rule: 'requireStatus', detail });
+    persistReport('static');
     return done({ status: 'blocked_by_policy', violation: { rule: 'requireStatus', detail } });
+  }
+
+  // ---- preflight, part 1: static gates. A refusal here costs milliseconds,
+  //      not a browser, and the report on disk says exactly which condition
+  //      was not met.
+  {
+    const failed = firstGateFailure(report);
+    if (failed) {
+      evidence.event('preflight_not_ready', { check: failed.name, detail: failed.detail, policyRule: failed.policyRule });
+      persistReport('static');
+      if (failed.policyRule) {
+        return fromHalt({ kind: 'blocked', rule: failed.policyRule, detail: failed.detail ?? failed.name });
+      }
+      return fromHalt({
+        kind: 'failed', class: 'precondition_not_met', stepId: `(preflight ${failed.name})`,
+        message: `the conditions to run ${active.id}@${active.version} are not met: ${failed.name}`,
+        expected: failed.name === 'skill_graph' ? 'every declared skill resolvable' : failed.name,
+        observed: failed.detail ?? 'check failed',
+      });
+    }
   }
 
   // ---- helpers bound to this run
@@ -286,17 +359,27 @@ export async function replay(
   try {
 
   if (!(await runNavigate(active.surface.entryUrl))) {
+    addCheck(report, {
+      name: 'entry_allowed', ok: false, gate: true, policyRule: 'allowedOrigins',
+      detail: `entry URL ${active.surface.entryUrl} is outside the allowlist`,
+    });
+    persistReport('arrival');
     return fromHalt({
       kind: 'blocked', rule: 'allowedOrigins',
       detail: `entry URL ${active.surface.entryUrl} is outside the allowlist`,
     });
   }
+  addCheck(report, { name: 'entry_allowed', ok: true, gate: true, detail: active.surface.entryUrl });
 
   // Is this still the software this flow was recorded against? Checked once, on
   // arrival, and only flagged: a tenant that has upgraded ahead of the others is
   // something to notice on the day rather than to refuse work over.
   if (active.product.fingerprint) {
     const fp = await waitForCondition(active.product.fingerprint, surface, 4000);
+    addCheck(report, {
+      name: 'product_fingerprint', ok: fp.ok, gate: false,
+      detail: fp.ok ? describeCondition(active.product.fingerprint) : `NOT ${describeCondition(active.product.fingerprint)}`,
+    });
     if (!fp.ok) {
       flags.push({
         kind: 'product_version_drift',
@@ -308,6 +391,335 @@ export async function replay(
         check: describeCondition(active.product.fingerprint),
       });
     }
+  }
+
+  // ---- preflight, part 2: the ready state.
+  //
+  // "The conditions to run" = an authenticated session (if declared) and the
+  // declared business-data preconditions (if any). Checked with the same
+  // Condition vocabulary the steps use; established when policy allows; failed
+  // fast when they cannot be met. Re-run on restart, because "restart" means
+  // "reach the ready state again", not merely "rewind the cursor".
+  //
+  // The result of a delegated skill run, mapped back into this run's terms.
+  type SkillRun =
+    | { kind: 'success'; outputs: Record<string, unknown> }
+    | { kind: 'business'; code: string; message: string; data: Record<string, string> }
+    | { kind: 'failed'; class: ErrorClass; message: string; expected: string; observed: string }
+    | { kind: 'blocked'; rule: string; detail: string }
+    | { kind: 'escalated'; intervention: Extract<ReplayResult, { status: 'escalated' }>['intervention'] };
+
+  /**
+   * Run one declared skill IN THIS RUN'S live session -- same surface, same
+   * policy, same redaction chokepoint, same broker. The child gets the full
+   * engine (its own preflight, checkpoints, signals, recovery) by recursion,
+   * which is exactly the point: a skill is not a weaker kind of run.
+   *
+   * Depth is capped because composition is a graph, not a rabbit hole.
+   */
+  async function runSkill(name: string, args: Record<string, unknown>, reason: string): Promise<SkillRun> {
+    const entry = graph.skills.get(name);
+    if (!entry) {
+      return { kind: 'failed', class: 'precondition_not_met', message: `skill "${name}" is not loaded`,
+        expected: 'a resolvable uses entry', observed: `no skill named "${name}" in the resolved graph` };
+    }
+    if (depth + 1 > policy.maxCompositionDepth) {
+      return { kind: 'failed', class: 'precondition_not_met',
+        message: `skill "${name}" would nest deeper than policy allows (${policy.maxCompositionDepth})`,
+        expected: `depth <= ${policy.maxCompositionDepth}`, observed: `depth ${depth + 1}` };
+    }
+    evidence.event('skill_start', { skill: name, capability: entry.source, reason });
+    const child = await replay(entry.cap, args, {
+      surface, policy, redactor, evidence, broker,
+      skills: graph.skills, skillProblems: [], skillOrder: graph.order,
+      invokedBy: deps.invokedBy, idempotencyKey: deps.idempotencyKey,
+      depth: depth + 1,
+      scope: scopeLabel ? `${scopeLabel}>${name}` : name,
+    });
+    steps.push(...child.steps.map((s) => ({ ...s, stepId: `${name}:${s.stepId}` })));
+    flags.push(...child.flags);
+    flags.push({ kind: 'skill_loaded', name, capabilityId: entry.cap.id, version: entry.cap.version });
+    evidence.event('skill_done', { skill: name, capability: entry.source, status: child.status });
+    switch (child.status) {
+      case 'success': return { kind: 'success', outputs: child.outputs };
+      case 'business_outcome': return { kind: 'business', code: child.outcome.code, message: child.outcome.message, data: child.outcome.data ?? {} };
+      case 'failed': return { kind: 'failed', class: child.error.class, message: child.error.message, expected: child.error.expected, observed: child.error.observed };
+      case 'blocked_by_policy': return { kind: 'blocked', rule: child.violation.rule, detail: child.violation.detail };
+      case 'escalated': return { kind: 'escalated', intervention: child.intervention };
+    }
+  }
+
+  /** Merge a child's outputs into this run's parameter scope as `name.field`,
+   *  so later declared values can reference what a skill found. */
+  const adoptSkillOutputs = (name: string, outputs: Record<string, unknown>) => {
+    for (const [k, v] of Object.entries(outputs)) values[`${name}.${k}`] = String(v);
+  };
+
+  /**
+   * Establish and verify the declared session requirement.
+   *
+   * Store the REQUIREMENT, never the state: the artifact carries a checkable
+   * predicate ("the sign-on control is absent") and how to get there (the auth
+   * skill) -- not cookies, not tokens, not a flag. Artifacts from before
+   * `requires` existed get their check synthesized from the login steps' own
+   * sign-on target, so the 1.0 recordings gain the same gate unchanged.
+   */
+  async function ensureSession(phase: string): Promise<Halt | null> {
+    const sess = active.requires?.session;
+    const synth = sess ? null : synthesizeSessionCheck(active);
+    const check = deps.overlay?.session?.check ?? sess?.check ?? synth?.check;
+    if (!check) return null;
+
+    const establishRef = sess?.establish?.uses;
+    const inlineLogin = !establishRef && (active.auth?.loginStepIds.length ?? 0) > 0;
+    const describe = sess?.describe ?? synth?.source ?? 'an authenticated session';
+
+    const verify = () => waitForCondition(check, surface, 4000);
+
+    const established = await (async (): Promise<{ ok: boolean; via: string } | { halt: Halt }> => {
+      const first = await verify();
+      if (first.ok) return { ok: true, via: 'already satisfied' };
+
+      const mode = sess?.onNotMet ?? 'establish';
+      evidence.event('precondition_not_met', { requirement: 'session', phase, mode, check: describeCondition(check) });
+
+      if (mode === 'fail') {
+        return { halt: {
+          kind: 'failed', class: 'precondition_not_met', stepId: '(preflight session)',
+          message: `session requirement not met and policy says fail: ${describe}`,
+          expected: describeCondition(check),
+          observed: first.obs.text.slice(0, 300).replace(/\s+/g, ' '),
+        } };
+      }
+      if (mode === 'escalate') {
+        const r = await escalate({
+          runId, capabilityId: active.id, capabilityVersion: active.version,
+          stepId: '(preflight session)', reason: 'stuck',
+          summary: `Session requirement not met before the flow can start: ${describe}`,
+          expected: describeCondition(check),
+          observed: first.obs.text.slice(0, 300).replace(/\s+/g, ' '),
+          url: (await surface.observe()).url, screenshot: await shot('precondition-session'),
+        });
+        if (!r) {
+          return { halt: {
+            kind: 'failed', class: 'precondition_not_met', stepId: '(preflight session)',
+            message: `session requirement not met and no operator channel is attached: ${describe}`,
+            expected: describeCondition(check), observed: 'escalation unavailable',
+          } };
+        }
+        if (r.resolution === 'abort') {
+          return { halt: { kind: 'escalated', id: r.id, reason: 'stuck', resolution: 'abort', operator: r.operator, note: r.note } };
+        }
+        return { ok: false, via: `operator (${r.resolution})` };
+      }
+      // mode === 'establish' (the default)
+      if (establishRef) {
+        const r = await runSkill(establishRef, {}, `establish session (${phase})`);
+        if (r.kind !== 'success') {
+          // The child's own verdict is the honest one: an app crash during
+          // sign-on must arrive as surface_error, not be laundered into
+          // "precondition not met" -- callers retry those differently.
+          if (r.kind === 'failed') {
+            return { halt: {
+              kind: 'failed', class: r.class, stepId: `(preflight session via ${establishRef})`,
+              message: `skill "${establishRef}" failed while establishing the session: ${r.message}`,
+              expected: r.expected, observed: r.observed,
+            } };
+          }
+          if (r.kind === 'blocked') {
+            return { halt: { kind: 'blocked', rule: r.rule, detail: `while establishing the session via "${establishRef}": ${r.detail}`, stepId: '(preflight session)' } };
+          }
+          if (r.kind === 'escalated') {
+            return { halt: { kind: 'escalated', id: r.intervention.id, reason: r.intervention.reason,
+              resolution: r.intervention.resolution, operator: r.intervention.operator, note: r.intervention.note } };
+          }
+          return { halt: {
+            kind: 'failed', class: 'precondition_not_met', stepId: `(preflight session via ${establishRef})`,
+            message: `could not establish the session requirement with skill "${establishRef}": ${r.code}`,
+            expected: describeCondition(check),
+            observed: 'the establishing skill answered with a business outcome',
+          } };
+        }
+        return { ok: false, via: `skill "${establishRef}"` };
+      }
+      if (inlineLogin) {
+        // Legacy path: re-run the artifact's own inline login steps, but with
+        // the sign-on screen recognised from the artifact (synthesized from the
+        // login click's target) instead of control names hardcoded in the engine.
+        await runNavigate(active.surface.entryUrl);
+        if (synth) {
+          const atLogin = await waitForCondition(synth.loginScreen, surface, 5000);
+          if (!atLogin.ok) evidence.event('reauth_no_login_screen', { url: atLogin.obs.url });
+        }
+        for (const id of active.auth?.loginStepIds ?? []) {
+          const ls = active.steps.find((x) => x.id === id);
+          if (!ls) continue;
+          try {
+            await runStepOnce(ls);
+            evidence.event('reauth_step', { stepId: ls.id, action: ls.action });
+          } catch (e) {
+            // A failed re-login must not be silent: it turns into a confusing
+            // timeout three steps later instead of the honest "we could not sign
+            // back in" that it actually is.
+            evidence.event('reauth_step_failed', { stepId: ls.id, error: String((e as Error).message).slice(0, 200) });
+          }
+        }
+        // Settle: the sign-on POST redirects into the frameset, and moving on
+        // before that lands means the next step polls a page still on its way
+        // out. The ARTIFACT's first post-login step knows what the landing
+        // screen looks like -- the engine does not need to.
+        const firstPost = active.steps.find((x) => !(active.auth?.loginStepIds ?? []).includes(x.id));
+        if (firstPost?.waitFor) await waitForCondition(firstPost.waitFor, surface, 8000);
+        return { ok: false, via: 'inline login steps' };
+      }
+      return { halt: {
+        kind: 'failed', class: 'precondition_not_met', stepId: '(preflight session)',
+        message: `session requirement not met and the artifact declares no way to establish it: ${describe}`,
+        expected: describeCondition(check),
+        observed: first.obs.text.slice(0, 300).replace(/\s+/g, ' '),
+      } };
+    })();
+
+    if ('halt' in established) { addCheck(report, { name: 'session', ok: false, gate: true, detail: established.halt.kind === 'failed' ? established.halt.message : 'escalated' }); return established.halt; }
+
+    const second = established.ok ? { ok: true } : await verify();
+    if (!second.ok) {
+      addCheck(report, { name: 'session', ok: false, gate: true, detail: `still unmet after establishment (${established.via})` });
+      return {
+        kind: 'failed', class: 'precondition_not_met', stepId: '(preflight session)',
+        message: `session requirement still not met after establishment via ${established.via}`,
+        expected: describeCondition(check),
+        observed: 'condition still false after establishing',
+      };
+    }
+
+    addCheck(report, {
+      name: 'session', ok: true, gate: true,
+      detail: established.ok ? describeCondition(check) : `${describeCondition(check)} -- established ${established.via}`,
+    });
+    if (!established.ok) {
+      flags.push({ kind: 'precondition_established', name: 'session', via: established.via, check: describeCondition(check) });
+    }
+    evidence.event('session_verified', { phase, check: describeCondition(check), established: !established.ok ? established.via : undefined });
+
+    // Audit attribution: read WHO we are acting as, from the app itself. The
+    // value is registered for redaction -- evidence proves the identity, it
+    // never warehouses it.
+    if (sess?.identity) {
+      try {
+        const obs = await surface.observe();
+        const res = await resolveLocator(sess.identity, obs, surface, { allowCoordinateFallback: policy.allowCoordinateFallback });
+        if (res.ok) {
+          const who = (await surface.read(res.ref, 'text'))?.trim() ?? '';
+          if (who) {
+            redactor.addSensitive('operator', who, 'identifier');
+            evidence.event('session_identity', { operator: who, phase });
+          }
+        }
+      } catch { /* attribution is evidence, not a gate -- never fatal */ }
+    }
+    return null;
+  }
+
+  /** Verify the declared business-data preconditions by invoking the skills
+   *  that can check them. A child's honest answer becomes this run's answer. */
+  async function ensureData(phase: string): Promise<Halt | null> {
+    for (const req of active.requires?.data ?? []) {
+      let args: Record<string, string> = {};
+      try {
+        args = Object.fromEntries(
+          Object.entries(req.args).map(([k, expr]) => [k, resolveValue(expr, values, redactor)]),
+        );
+      } catch (e) {
+        return {
+          kind: 'failed', class: 'invalid_input', stepId: `(requires ${req.name})`,
+          message: `data precondition "${req.name}" references an unknown parameter: ${(e as Error).message}`,
+          expected: Object.keys(req.args).join(', '), observed: 'unresolvable argument',
+        };
+      }
+      const r = await runSkill(req.via, args, `verify ${req.name} (${phase})`);
+      if (r.kind === 'success') {
+        adoptSkillOutputs(req.via, r.outputs);
+        addCheck(report, { name: `data.${req.name}`, ok: true, gate: true, detail: `via "${req.via}"` });
+        continue;
+      }
+      if (r.kind === 'business' && req.notMetOutcomes.includes(r.code)) {
+        addCheck(report, {
+          name: `data.${req.name}`, ok: false, gate: false,
+          detail: `${r.code} via "${req.via}" -- ${req.onNotMet === 'propagate' ? 'propagated as the caller\u2019s answer' : `onNotMet=${req.onNotMet}`}`,
+        });
+        if (req.onNotMet === 'propagate') {
+          // A child's legitimate answer is THE ANSWER, not an error. The brief
+          // calls conflating these the most common design mistake; composition
+          // must not reintroduce it one level up.
+          report.verdict = 'resolved_early';
+          return { kind: 'business', code: r.code, message: r.message, data: r.data };
+        }
+        if (req.onNotMet === 'escalate') {
+          const h = await escalate({
+            runId, capabilityId: active.id, capabilityVersion: active.version,
+            stepId: `(requires ${req.name})`, reason: 'stuck',
+            summary: `Data precondition "${req.name}" not met (${r.code}); an operator decides whether to continue.`,
+            expected: `not ${r.code}`, observed: r.message, url: (await surface.observe()).url,
+          });
+          if (h && h.resolution !== 'abort') { addCheck(report, { name: `data.${req.name}`, ok: true, gate: true, detail: `operator approved (${h.resolution})` }); continue; }
+          return h
+            ? { kind: 'escalated', id: h.id, reason: 'stuck', resolution: h.resolution, operator: h.operator, note: h.note }
+            : { kind: 'failed', class: 'precondition_not_met', stepId: `(requires ${req.name})`,
+                message: `data precondition "${req.name}" not met (${r.code}) and no operator was available`,
+                expected: `not ${r.code}`, observed: r.message };
+        }
+        return { kind: 'failed', class: 'precondition_not_met', stepId: `(requires ${req.name})`,
+          message: `data precondition "${req.name}" not met: ${r.code}`,
+          expected: `not one of [${req.notMetOutcomes.join(', ')}]`, observed: r.message };
+      }
+      // Anything else the child returned is either a machinery failure of the
+      // check itself, or the application genuinely breaking mid-check. Either
+      // way the child's own error CLASS is the honest answer -- "surface_error"
+      // from an app crash must not be laundered into "precondition_not_met",
+      // because callers retry those differently. It comes back naming the
+      // skill that failed, per the composition rule: a dependency's hard
+      // failure is the parent's hard failure.
+      const why = r.kind === 'business' ? `unexpected outcome ${r.code}`
+        : r.kind === 'escalated' ? 'escalated'
+        : r.kind === 'blocked' ? `blocked by policy: ${r.detail}`
+        : r.message;
+      addCheck(report, { name: `data.${req.name}`, ok: false, gate: true, detail: why });
+      if (r.kind === 'blocked') {
+        return { kind: 'blocked', rule: r.rule, detail: `while verifying "${req.name}" via "${req.via}": ${r.detail}`, stepId: `(requires ${req.name})` };
+      }
+      if (r.kind === 'escalated') {
+        return { kind: 'escalated', id: r.intervention.id, reason: r.intervention.reason,
+          resolution: r.intervention.resolution, operator: r.intervention.operator, note: r.intervention.note };
+      }
+      if (r.kind === 'business') {
+        // Not one of the declared "not met" codes, but still the child's honest
+        // ANSWER (a PERMISSION_DENIED from the lookup is not a crash of the
+        // check). It propagates; demoting an answer to a failure is the
+        // mistake this whole taxonomy exists to avoid.
+        report.verdict = 'resolved_early';
+        return { kind: 'business', code: r.code, data: r.data,
+          message: `while verifying "${req.name}" via "${req.via}": ${r.message}` };
+      }
+      return {
+        kind: 'failed', class: r.class, stepId: `(requires ${req.name})`,
+        message: `skill "${req.via}" failed while verifying "${req.name}": ${r.message}`,
+        expected: r.expected, observed: r.observed,
+      };
+    }
+    return null;
+  }
+
+  async function ensureReadyState(phase: string): Promise<Halt | null> {
+    const s = await ensureSession(phase);
+    if (s) return s;
+    return ensureData(phase);
+  }
+
+  {
+    const halt = await ensureReadyState('initial');
+    persistReport(halt ? 'ready-state' : 'ready');
+    if (halt) return fromHalt(halt);
   }
 
   async function runNavigate(url: string): Promise<boolean> {
@@ -399,34 +811,15 @@ export async function replay(
           evidence.event('recovery_target_unresolved', { signal: s.id, detail: res.detail });
         }
       } else if (r.do === 'reauth') {
-        // Re-authenticate from the credential REFERENCE, mid-run, and then retry
-        // the step that was interrupted. The password is fetched from the
-        // environment at this moment and never written anywhere.
+        // Re-authenticate from the credential REFERENCE, mid-run; the password
+        // is fetched from the environment at this moment and never written
+        // anywhere. The establishment path is the ARTIFACT'S OWN -- the auth
+        // skill, or the recorded inline login steps with the sign-on screen
+        // recognized from the artifact -- so the engine hardcodes no control
+        // names and any product can declare how its sign-on works.
         await runNavigate(active.surface.entryUrl);
-        // Confirm we are actually looking at the sign-on screen before typing
-        // credentials into it. Without this the reauth types into whatever
-        // happens to be on screen and fails three steps later as a timeout.
-        const atLogin = await waitForCondition(
-          { node_visible: { role: 'button', name: 'Sign On' } }, surface, 5000,
-        );
-        if (!atLogin.ok) evidence.event('reauth_no_login_screen', { url: atLogin.obs.url });
-        for (const id of active.auth?.loginStepIds ?? []) {
-          const ls = active.steps.find((x) => x.id === id);
-          if (!ls) continue;
-          try {
-            await runStepOnce(ls);
-            evidence.event('reauth_step', { stepId: ls.id, action: ls.action });
-          } catch (e) {
-            // A failed re-login must not be silent: it turns into a confusing
-            // timeout three steps later instead of the honest "we could not sign
-            // back in" that it actually is.
-            evidence.event('reauth_step_failed', { stepId: ls.id, error: String((e as Error).message).slice(0, 200) });
-          }
-        }
-        // Settle: the sign-on POST redirects into the frameset, and restarting
-        // the flow before that lands means the next step polls a page that is
-        // still on its way out.
-        await waitForCondition({ node_visible: { role: 'link', name: 'Member Search' } }, surface, 8000);
+        const s = await ensureSession('reauth');
+        if (s) return { kind: 'halt', halt: s };
       }
       traces.push({ signalId: s.id, action: r.do, attempt: used + 1, outcome: r.then === 'continue' ? 'continued' : 'retried' });
       evidence.event('recovery_done', { signal: s.id, action: r.do, then: r.then });
@@ -506,7 +899,15 @@ export async function replay(
   );
   let restarts = 0;
 
-  for (let cursor = 0; cursor < active.steps.length; cursor++) {
+  // The ready state already covered sign-on (established, or found in place),
+  // so an artifact whose login is INLINE starts after its login steps -- the
+  // same place a restart resumes. Starting at 0 would replay "navigate to the
+  // sign-on screen" against a session that is already signed on.
+  const sessionGated = Boolean(
+    deps.overlay?.session?.check ?? active.requires?.session?.check ?? synthesizeSessionCheck(active)?.check,
+  );
+
+  for (let cursor = sessionGated ? firstNonLogin : 0; cursor < active.steps.length; cursor++) {
     const step = active.steps[cursor]!;
     const st0 = Date.now();
     const trace: StepTrace = { stepId: step.id, action: step.action, status: 'ok', ms: 0, recoveries: [] };
@@ -529,7 +930,15 @@ export async function replay(
           message: 'the session was re-established but the flow could not be restarted cleanly',
           expected: 'a stable authenticated session', observed: `${restarts} restarts` });
       }
+      // Restart means "reach the ready state again", not merely "rewind the
+      // cursor": the session was just rebuilt, and any declared data
+      // preconditions have to be re-verified before the post-login steps can
+      // meaningfully run -- in a composed flow the cursor rewinds to a step
+      // that assumes the lookup already happened.
       evidence.event('flow_restart', { fromStep: step.id, resumeAt: active.steps[firstNonLogin]?.id, attempt: restarts });
+      const rs = await ensureReadyState(`restart-${restarts}`);
+      persistReport('ready-state');
+      if (rs) return fromHalt(rs);
       cursor = firstNonLogin - 1;
       continue;
     }
@@ -588,7 +997,35 @@ export async function replay(
     outputs[o.name] = o.type === 'number' ? Number(raw.replace(/[^0-9.\-]/g, '')) : raw;
   }
 
-  await shot('success');
+  // ---- read-back post-condition: the world agrees, not just the screen.
+  // A checkpoint proves what the final screen SAYS; this proves the effect is
+  // actually there. A capability that hands a banking agent a success it
+  // cannot verify is worse than one that fails loudly.
+  if (active.post) {
+    const cond = deps.overlay?.post?.condition ?? active.post.condition;
+    const post = await waitForCondition(cond, surface, 8000);
+    if (!post.ok) {
+      const png = await shot('postcondition-failed');
+      const snap = evidence.snapshot('postcondition-failed', post.obs.nodes);
+      evidence.event('postcondition_failed', { describe: active.post.describe });
+      return done({
+        status: 'failed',
+        error: {
+          class: 'postcondition_failed', stepId: '(post-condition)',
+          message: `the flow reported success but the read-back verification did not hold${
+            active.post.describe ? `: ${active.post.describe}` : ''}`,
+          expected: describeCondition(cond),
+          observed: post.obs.text.slice(0, 400).replace(/\s+/g, ' '),
+          evidence: { screenshot: png, snapshot: snap },
+        },
+      });
+    }
+    evidence.event('postcondition_verified', { describe: active.post.describe, check: describeCondition(cond) });
+  }
+
+  // Label skill-scoped success shots, so a composed run's shared evidence dir
+  // says WHO reached their end state.
+  await shot(scopeLabel ? `success-${scopeLabel}` : 'success');
   const ranks = steps.map((s) => s.strategy?.rank).filter((r): r is number => r !== undefined);
   evidence.event('replay_success', {
     outputs: Object.keys(outputs),
@@ -597,9 +1034,63 @@ export async function replay(
   return done({ status: 'success', outputs });
 
 
+  /** Resolve a declared `uses` slot to arguments and run it as a step. */
+  async function runInvokeStep(step: Step, trace: StepTrace): Promise<Halt | null> {
+    if (!step.uses) {
+      return { kind: 'failed', class: 'invalid_input', stepId: step.id,
+        message: 'invoke step declares no uses entry', expected: 'step.uses to name a uses slot', observed: 'missing' };
+    }
+    let args: Record<string, string> = {};
+    try {
+      args = Object.fromEntries(
+        Object.entries(step.args ?? {}).map(([k, expr]) => [k, resolveValue(expr, values, redactor)]),
+      );
+    } catch (e) {
+      return { kind: 'failed', class: 'invalid_input', stepId: step.id,
+        message: (e as Error).message, expected: 'resolvable args', observed: 'unknown parameter' };
+    }
+    evidence.event('invoke_start', { stepId: step.id, skill: step.uses });
+    const r = await runSkill(step.uses, args, `step ${step.id}`);
+    if (r.kind === 'success') {
+      adoptSkillOutputs(step.uses, r.outputs);
+      // The step's own checkpoint, if declared, is asserted against the state
+      // the child LEFT BEHIND. If it fails we do not re-run the child (it may
+      // already have acted); we ask a human, or accept and carry on.
+      if (step.checkpoint) {
+        const v = await pollUntil(step.checkpoint, step, 'post', step.timeoutMs, trace);
+        if (v.kind === 'timeout') {
+          evidence.event('checkpoint_failed', { stepId: step.id, expected: describeCondition(step.checkpoint) });
+          const esc = await onStuck(step, trace, 'checkpoint_failed',
+            describeCondition(step.checkpoint), v.obs.text.slice(0, 300).replace(/\s+/g, ' '));
+          if (esc === 'skip') { trace.status = 'skipped'; return null; }
+          if (esc === 'retry' || esc === 'verify') return null; // never re-run the child
+          return esc;
+        }
+        if (v.kind === 'signal') {
+          const verdict = v.verdict;
+          if (verdict.kind === 'halt') return verdict.halt;
+          if ('traces' in verdict) trace.recoveries.push(...verdict.traces);
+        }
+      }
+      return null;
+    }
+    switch (r.kind) {
+      case 'business': return { kind: 'business', code: r.code, message: r.message, data: r.data };
+      case 'blocked': return { kind: 'blocked', rule: r.rule, detail: r.detail, stepId: step.id };
+      case 'escalated':
+        return { kind: 'escalated', id: r.intervention.id, reason: r.intervention.reason,
+          resolution: r.intervention.resolution, operator: r.intervention.operator, note: r.intervention.note };
+      case 'failed':
+        return { kind: 'failed', class: r.class, stepId: step.id,
+          message: `skill "${step.uses}" failed: ${r.message}`, expected: r.expected, observed: r.observed };
+    }
+  }
+
   // ---- the per-step ladder, closed over the run
 
   async function executeStep(step: Step, trace: StepTrace): Promise<Halt | 'restart' | null> {
+    // Delegation is not an act on a control; it runs the child once, above.
+    if (step.action === 'invoke') return runInvokeStep(step, trace);
     let verifyOnly = false;
     for (let attempt = 0; attempt <= step.retries + 1; attempt++) {
       // A handoff may already have produced the state this step was reaching
@@ -630,7 +1121,12 @@ export async function replay(
       // 1+2. Wait for the precondition and watch for signals at the same time.
       //      The previous step may have landed us somewhere unexpected, and that
       //      is discovered here rather than by acting blindly.
-      const pre = await pollUntil(step.waitFor, step, 'pre', step.timeoutMs, trace);
+      //      An assert acts on nothing, so its checkpoint IS a wait condition:
+      //      folded in here rather than silently never evaluated.
+      const waitFor = step.action === 'assert' && step.checkpoint
+        ? (step.waitFor ? { all: [step.waitFor, step.checkpoint] } : step.checkpoint)
+        : step.waitFor;
+      const pre = await pollUntil(waitFor, step, 'pre', step.timeoutMs, trace);
       if (pre.kind === 'signal') {
         const v = pre.verdict;
         if (v.kind === 'halt') return v.halt;
@@ -640,7 +1136,7 @@ export async function replay(
       }
       if (pre.kind === 'timeout') {
         const esc = await onStuck(step, trace, 'timeout',
-          `waiting for: ${describeCondition(step.waitFor!)}`, pre.obs.text.slice(0, 300).replace(/\s+/g, ' '));
+          `waiting for: ${describeCondition(waitFor!)}`, pre.obs.text.slice(0, 300).replace(/\s+/g, ' '));
         if (esc === 'verify') { verifyOnly = true; continue; }
         if (esc === 'retry') continue;
         if (esc === 'skip') { trace.status = 'skipped'; return null; }
@@ -648,7 +1144,7 @@ export async function replay(
       }
       const obs = pre.obs;
 
-      if (step.action === 'assert') { trace.status = 'ok'; break; }
+      if (step.action === 'assert') { trace.status = 'ok'; return null; }
 
       // 3. resolve
       let ref: string | null = null;

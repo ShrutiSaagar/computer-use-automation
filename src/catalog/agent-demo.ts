@@ -35,9 +35,14 @@ export async function agentDemo(opts: { ask: string; policyPath?: string; out?: 
         : p.pattern ? z.string().regex(new RegExp(p.pattern)) : z.string();
       shape[p.name] = base.describe(`${p.description}${p.example ? ` e.g. "${p.example}"` : ''}`);
     }
-    return tool(String(d.name), String(d.description), shape, async (args) => {
+    return tool(String(d.name), String(d.description), shape, async (rawArgs) => {
+      // Invocation metadata travels alongside the typed args and is consumed
+      // here, so it never reaches input validation as an unknown parameter.
+      const { invokedBy, idempotencyKey, ...args } = (rawArgs ?? {}) as Record<string, unknown>;
       const { result } = await runReplay(cap, args as Record<string, string>, {
         policyPath: opts.policyPath, label: 'agent',
+        invokedBy: typeof invokedBy === 'string' ? invokedBy : 'agent-demo(claude)',
+        idempotencyKey: typeof idempotencyKey === 'string' ? idempotencyKey : undefined,
       });
       const summary =
         result.status === 'success' ? `SUCCESS ${JSON.stringify(result.outputs)}`

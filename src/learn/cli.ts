@@ -36,10 +36,12 @@ function nextVersion(id: string): number {
 }
 
 export async function learnCommand(opts: {
-  goal?: string; target?: string; policyPath?: string; headed?: boolean; maxSteps: number;
+  goal?: string; target?: string; policyPath?: string; headed?: boolean; maxSteps: number; deployment?: string;
 }): Promise<number> {
-  if (!opts.goal || !opts.target) {
-    console.error('usage: learn --goal "<natural language goal>" --target <url> [--headed]');
+  const TIERS = ['dev', 'sandbox', 'uat', 'prod'] as const;
+  const deployment = opts.deployment as (typeof TIERS)[number] | undefined;
+  if (!opts.goal || !opts.target || (deployment && !TIERS.includes(deployment))) {
+    console.error('usage: learn --goal "<natural language goal>" --target <url> [--headed] [--deployment dev|sandbox|uat|prod]');
     return 2;
   }
   const policy = loadPolicy(opts.policyPath ?? 'policy.dev.yaml');
@@ -96,7 +98,7 @@ export async function learnCommand(opts: {
       productId: process.env.CUA_PRODUCT_ID ?? 'cucore',
       productVendor: process.env.CUA_PRODUCT_VENDOR ?? 'CU-Core Systems',
       productVersion: process.env.CUA_PRODUCT_VERSION ?? '8.2',
-      credentialRef, discoveryRunId: evidence.runId, evidenceDir: evidence.dir,
+      credentialRef, deployment, discoveryRunId: evidence.runId, evidenceDir: evidence.dir,
       model: MODEL, version: nextVersion(outcome.finalize.id),
     });
   } catch (e) {

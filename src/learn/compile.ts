@@ -101,6 +101,24 @@ function deriveCheckpoint(entry: TraceEntry, exampleValues: string[]): Condition
   return undefined;
 }
 
+/**
+ * Derive the session requirement from the recorded login steps: the sign-on
+ * control's strongest stable identity (role+name, else the locator guard)
+ * becomes the check -- "that control is absent" is what being signed on looks
+ * like from the outside. No engine hardcoding, no model guessing.
+ */
+function sessionCheckFromLoginSteps(
+  steps: { id: string; target?: { strategies: { kind: string; role?: string; name?: string }[]; guard: { role: string; name?: string } } }[],
+  loginStepIds: string[],
+): { check: { node_absent: { role: string; name?: string } } } | null {
+  const last = steps.find((s) => s.id === loginStepIds[loginStepIds.length - 1]);
+  const roleStrategy = last?.target?.strategies.find((s) => s.kind === 'role_name');
+  const role = roleStrategy?.role ?? last?.target?.guard.role;
+  const name = roleStrategy?.name ?? last?.target?.guard.name;
+  if (!role) return null;
+  return { check: { node_absent: name ? { role, name } : { role } } };
+}
+
 export function compile(args: {
   outcome: DiscoveryOutcome;
   goal: string;
@@ -109,6 +127,9 @@ export function compile(args: {
   productVendor: string;
   productVersion: string;
   credentialRef?: string;
+  /** Deployment tier the target leads to; recorded on the artifact so policy
+   *  can refuse a sandbox recording being pointed at production. */
+  deployment?: 'dev' | 'sandbox' | 'uat' | 'prod';
   discoveryRunId: string;
   evidenceDir: string;
   model: string;
@@ -326,14 +347,35 @@ export function compile(args: {
     .filter((s) => seen.has(norm(s.id)) || seen.has(norm(s.outcome?.code)))
     .map((s) => s.outcome?.code ?? s.id);
 
+  // A fresh artifact declares its session requirement even though discovery ran
+  // while signing on: the compiler derives the check from the recorded login
+  // steps themselves (the sign-on control disappearing IS "signed on"), so the
+  // replay preflight can verify -- and re-establish -- the session without any
+  // control names hardcoded in the engine. Establishment stays inline
+  // (loginStepIds) until an auth skill exists for this product to delegate to.
+  const sessionCheck = loginStepIds.length
+    ? sessionCheckFromLoginSteps(steps, loginStepIds)
+    : null;
+
   return Capability.parse({
-    schemaVersion: '1.0',
+    schemaVersion: '1.1',
     id: capabilityId, version: args.version, name: f.name, description: f.description,
     status: 'draft',
     product: { id: productId, vendor: args.productVendor, version: args.productVersion },
-    surface: { kind: 'legacy_web', entryUrl: target },
+    surface: { kind: 'legacy_web', entryUrl: target, deployment: args.deployment ?? 'sandbox' },
     environment: outcome.environment,
     auth: loginStepIds.length ? { credentialRef: credentialRef ?? 'env:APP_OPERATOR', loginStepIds } : undefined,
+    ...(sessionCheck
+      ? {
+          requires: {
+            session: {
+              describe: 'an authenticated operator session (the sign-on screen is gone)',
+              check: sessionCheck.check,
+              onNotMet: 'establish',
+            },
+          },
+        }
+      : {}),
     inputs: callerInputs.map((i) => ({
       name: i.name, type: i.type, description: i.description, required: true,
       pattern: i.pattern, enum: i.enumValues, sensitivity: i.sensitivity as never, example: i.example,

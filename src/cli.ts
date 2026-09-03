@@ -11,7 +11,27 @@
 import { writeFileSync } from 'node:fs';
 import { z } from 'zod';
 import { Capability } from './schema/capability.js';
-import { loadCapability, listCapabilities, runReplay } from './run.js';
+import { loadCapability, listCapabilities, runReplay, preflightOnly } from './run.js';
+import type { PreflightReport } from './replay/preflight.js';
+
+function printPreflight(r: PreflightReport): void {
+  const badge =
+    r.verdict === 'ready' ? C.green('READY')
+    : r.verdict === 'ready_with_flags' ? C.yellow('READY (WITH FLAGS)')
+    : r.verdict === 'resolved_early' ? C.cyan('RESOLVED BY PRECONDITION CHECK')
+    : C.red('NOT READY');
+  console.log(`\n${badge}  ${C.dim(`${r.capability} · deployment ${r.deployment}${r.tenantId ? ` · tenant ${r.tenantId}` : ''}`)}`);
+  console.log(C.bold('\nchecks'));
+  for (const c of r.checks) {
+    const mark = c.ok ? C.green('ok') : c.gate ? C.red('GATE FAIL') : C.yellow('flag');
+    console.log(`  ${mark.padEnd(14)} ${c.name.padEnd(22)} ${C.dim(c.detail ?? '')}`);
+  }
+  if (r.skills.length) {
+    console.log(C.bold('\nskills'));
+    for (const s of r.skills) console.log(`  ${s}`);
+  }
+  console.log('');
+}
 
 const argv = process.argv.slice(2);
 const cmd = argv[0];
@@ -86,6 +106,13 @@ function printResult(r: Awaited<ReturnType<typeof runReplay>>['result']): void {
     console.log(C.bold('\nflags'));
     for (const f of r.flags) console.log(`  ${C.yellow(f.kind)} ${JSON.stringify(f)}`);
   }
+  if (r.skills?.length) {
+    console.log(C.bold('\nskills'));
+    for (const s of r.skills) console.log(`  ${s}`);
+  }
+  if (r.invokedBy || r.idempotencyKey) {
+    console.log(C.dim(`\ninvoked by ${r.invokedBy ?? 'unknown'}${r.idempotencyKey ? ` · idempotency key ${r.idempotencyKey}` : ''}`));
+  }
   console.log(C.dim(`\nevidence: ${r.evidenceDir}\n`));
 }
 
@@ -98,11 +125,20 @@ async function main(): Promise<number> {
       const spec = flag('capability') ?? argv[1];
       if (!spec) { console.error('usage: replay --capability <id[@v]|path.json> --input k=v ...'); return 2; }
       const cap = loadCapability(spec);
+      if (has('preflight-only')) {
+        // The conditions-to-run check, without a browser: skill graph, policy,
+        // credentials. What a calling agent should consult BEFORE committing.
+        const { report } = preflightOnly(cap, inputs(), { policyPath: flag('policy'), overlayPath: flag('overlay'), label: flag('label') });
+        printPreflight(report);
+        return report.verdict === 'ready' || report.verdict === 'ready_with_flags' ? 0 : 1;
+      }
       const { result } = await runReplay(cap, inputs(), {
         policyPath: flag('policy'),
         overlayPath: flag('overlay'),
         label: flag('label'),
         headless: !has('headed'),
+        invokedBy: flag('invoked-by') ?? 'cli',
+        idempotencyKey: flag('idempotency-key'),
       });
       printResult(result);
       return result.status === 'success' || result.status === 'business_outcome' ? 0 : 1;
@@ -130,7 +166,7 @@ async function main(): Promise<number> {
 
     case 'learn': {
       const { learnCommand } = await import('./learn/cli.js');
-      return learnCommand({ goal: flag('goal'), target: flag('target'), policyPath: flag('policy'), headed: has('headed'), maxSteps: Number(flag('max-steps') ?? 40) });
+      return learnCommand({ goal: flag('goal'), target: flag('target'), policyPath: flag('policy'), headed: has('headed'), maxSteps: Number(flag('max-steps') ?? 40), deployment: flag('deployment') });
     }
 
     case 'console': {
@@ -156,8 +192,9 @@ async function main(): Promise<number> {
     default:
       console.log(`interface-cua
 
-  learn    --goal "<natural language goal>" --target <url> [--headed]
+  learn    --goal "<natural language goal>" --target <url> [--headed] [--deployment dev|sandbox|uat|prod]
   replay   --capability <id[@v]|path.json> --input k=v [--policy p.yaml] [--overlay o.json] [--headed]
+           [--preflight-only] [--invoked-by who] [--idempotency-key key]
   list     show recorded capabilities and their contracts
   console  --port 7788   operator console for human takeover
   catalog  --port 7789   expose capabilities as agent-callable tools
