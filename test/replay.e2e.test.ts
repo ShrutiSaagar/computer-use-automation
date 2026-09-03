@@ -10,13 +10,15 @@
 import { after, before, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn, type ChildProcess } from 'node:child_process';
-import { rmSync } from 'node:fs';
+import { rmSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { loadCapability, runReplay } from '../src/run.js';
 
 const PORT = 4310;
 const BASE = `http://localhost:${PORT}`;
 const EVIDENCE = '.test-evidence';
 let app: ChildProcess;
+let tenantB: ChildProcess;
 
 const chaos = (mode: string, times = 1) =>
   fetch(`${BASE}/_chaos/arm`, { method: 'POST', headers: { 'content-type': 'application/json' },
@@ -34,14 +36,17 @@ before(async () => {
   process.env.CU_CORE_OPERATOR_USERNAME ??= 'svc.automation';
   process.env.CU_CORE_OPERATOR_PASSWORD ??= 'Tr0ubador-Demo-2026';
   app = spawn('npx', ['tsx', 'target-app/server.ts', `--port=${PORT}`], { stdio: 'ignore' });
+  tenantB = spawn('npx', ['tsx', 'target-app/server.ts', '--tenant=b', `--port=${PORT + 1}`], { stdio: 'ignore' });
   for (let i = 0; i < 40; i++) {
-    if (await fetch(`${BASE}/_chaos`).then(() => true).catch(() => false)) return;
+    const up = await Promise.all([BASE, `http://localhost:${PORT + 1}`].map((b) =>
+      fetch(`${b}/_chaos`).then(() => true).catch(() => false)));
+    if (up.every(Boolean)) return;
     await new Promise((r) => setTimeout(r, 250));
   }
-  throw new Error(`target app did not come up on ${PORT}`);
+  throw new Error(`target apps did not come up on ${PORT}/${PORT + 1}`);
 });
 
-after(() => { app?.kill(); rmSync(EVIDENCE, { recursive: true, force: true }); });
+after(() => { app?.kill(); tenantB?.kill(); rmSync(EVIDENCE, { recursive: true, force: true }); });
 
 test('the happy path replays deterministically and returns typed outputs', async () => {
   await clearChaos();
@@ -124,4 +129,43 @@ test('an unrecoverable state fails cleanly rather than hanging when no operator 
   assert.equal(r.error.class, 'checkpoint_failed');
   assert.match(r.error.observed, /Supervisor Override/);
   await clearChaos();
+});
+
+test('the composed run loads its skills, establishes its preconditions, and files a preflight report', async () => {
+  await clearChaos();
+  const { result, policy: _p } = await runReplay(loadCapability('member.subaccount.open'), HAPPY, { label: 'e2e-composed' });
+  assert.equal(result.status, 'success');
+  // the skills resolved and ran, pinned into the result
+  assert.ok(result.skills?.includes('signon=auth.signon@1'));
+  assert.ok(result.skills?.includes('lookup=member.shareSavings.lookup@2'));
+  assert.ok(result.flags.some((f) => f.kind === 'skill_loaded' && f.name === 'signon'));
+  assert.ok(result.flags.some((f) => f.kind === 'skill_loaded' && f.name === 'lookup'));
+  // the session precondition did not hold at arrival and was ESTABLISHED
+  assert.ok(result.flags.some((f) => f.kind === 'precondition_established' && f.name === 'session' && f.via.includes('signon')));
+  // child steps appear in the parent's trace, prefixed by skill name
+  assert.ok(result.steps.some((s) => s.stepId.startsWith('signon:') && s.status === 'ok'));
+  assert.ok(result.steps.some((s) => s.stepId.startsWith('lookup:') && s.status === 'ok'));
+  // the preflight report is on disk and says why every condition held
+  const report = JSON.parse(readFileSync(join(result.evidenceDir, 'preflight.json'), 'utf8'));
+  assert.ok(['ready', 'ready_with_flags'].includes(report.verdict));
+  const byName = Object.fromEntries(report.checks.map((c: { name: string }) => [c.name, c]));
+  assert.equal(byName['session']?.ok, true);
+  assert.equal(byName['data.member_exists']?.ok, true);
+  assert.equal(byName['deployment']?.detail, '"sandbox" is allowed by policy "dev"');
+});
+
+test('a 1.0 artifact with inline login replays through the session gate, against a second tenant via overlay', async () => {
+  // v1 carries its own login steps. The preflight establishes the session by
+  // running them, so the flow must START after them -- replaying "navigate to
+  // the sign-on screen" against a signed-on session is the regression this guards.
+  const { result: r } = await runReplay(loadCapability('member.subaccount.open@1'),
+    { memberNumber: '100483', accountType: 'Holiday Club', openingDeposit: '75.00' },
+    { label: 'e2e-northstar-v1', headless: true, overlayPath: 'capabilities/member.subaccount.open/northstar-fcu.overlay.json' });
+  assert.equal(r.status, 'success', JSON.stringify(r.status === 'failed' ? r.error : r.status));
+  if (r.status !== 'success') return;
+  assert.match(String(r.outputs.newAccountNumber), /^\d{4}-\d{6}$/);
+  assert.ok(r.flags.some((f) => f.kind === 'overlay_applied' && f.tenantId === 'northstar-fcu'));
+  assert.ok(r.flags.some((f) => f.kind === 'precondition_established' && f.name === 'session' && f.via === 'inline login steps'));
+  // no login step ran twice: the trace starts at the first post-login step
+  assert.equal(r.steps[0]?.stepId, 's5_member_no');
 });
